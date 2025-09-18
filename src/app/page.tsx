@@ -200,21 +200,7 @@ export default function MarlettReservations() {
     return () => clearInterval(interval);
   }, []);
   
-  // Navegación de galería con teclado
-  useEffect(() => {
-    if (!showGallery) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') {
-        setSelectedImageIndex(prev => (prev > 0 ? prev - 1 : salonImages.length - 1));
-      } else if (e.key === 'ArrowRight') {
-        setSelectedImageIndex(prev => (prev < salonImages.length - 1 ? prev + 1 : 0));
-      } else if (e.key === 'Escape') {
-        setShowGallery(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showGallery, salonImages.length]);
+  // Navegación de galería con teclado (se reubica más abajo tras salonImages)
   
   const [formData, setFormData] = useState({
     name: '',
@@ -275,9 +261,9 @@ export default function MarlettReservations() {
       description: 'Área de bienvenida con escaleras elegantes y diseño moderno'
     },
     {
-      url: '/salon-images/salon-principal.svg',
-      title: 'Salón Principal',
-      description: 'Espacio principal con ambiente sofisticado para grandes eventos'
+      url: '/marlett-images/salon-eventos-1.jpg', 
+      title: 'Salón de Eventos Premium',
+      description: 'Espacio sofisticado con arcos arquitectónicos y mesas redondas'
     },
     {
       url: '/salon-images/salon-eventos.svg',
@@ -305,6 +291,22 @@ export default function MarlettReservations() {
       description: 'Vista externa del Restaurante Marlett con diseño contemporáneo'
     }
   ];
+
+  // Navegación de galería con teclado (ubicada después de salonImages)
+  useEffect(() => {
+    if (!showGallery) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        setSelectedImageIndex(prev => (prev > 0 ? prev - 1 : salonImages.length - 1));
+      } else if (e.key === 'ArrowRight') {
+        setSelectedImageIndex(prev => (prev < salonImages.length - 1 ? prev + 1 : 0));
+      } else if (e.key === 'Escape') {
+        setShowGallery(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showGallery, salonImages.length]);
 
   // Menú Completo Marlett con Precios Reales
   const menuItems: MenuItem[] = [
