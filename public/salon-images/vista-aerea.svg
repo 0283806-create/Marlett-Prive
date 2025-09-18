@@ -1,0 +1,46 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo -->
+  <rect width="400" height="300" fill="#ecfdf5"/>
+  
+  <!-- Edificio principal (vista aérea) -->
+  <rect x="100" y="80" width="200" height="140" fill="#f5f5f4"/>
+  <rect x="110" y="90" width="180" height="120" fill="#ffffff"/>
+  
+  <!-- Divisiones internas (4 salones) -->
+  <line x1="200" y1="90" x2="200" y2="210" stroke="#d6d3d1" stroke-width="2"/>
+  <line x1="110" y1="150" x2="290" y2="150" stroke="#d6d3d1" stroke-width="2"/>
+  
+  <!-- Salones marcados -->
+  <text x="155" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">A</text>
+  <text x="245" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">B</text>
+  <text x="155" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">C</text>
+  <text x="245" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">D</text>
+  
+  <!-- Jardines alrededor -->
+  <ellipse cx="60" cy="120" rx="25" ry="40" fill="#059669"/>
+  <ellipse cx="340" cy="120" rx="25" ry="40" fill="#059669"/>
+  <ellipse cx="60" cy="180" rx="25" ry="40" fill="#10b981"/>
+  <ellipse cx="340" cy="180" rx="25" ry="40" fill="#10b981"/>
+  
+  <!-- Estacionamiento -->
+  <rect x="50" y="240" width="300" height="40" fill="#a8a29e"/>
+  <line x1="60" y1="250" x2="340" y2="250" stroke="#78716c" stroke-width="1"/>
+  <line x1="60" y1="260" x2="340" y2="260" stroke="#78716c" stroke-width="1"/>
+  <line x1="60" y1="270" x2="340" y2="270" stroke="#78716c" stroke-width="1"/>
+  
+  <!-- Autos (pequeños rectángulos) -->
+  <rect x="70" y="245" width="20" height="10" fill="#374151"/>
+  <rect x="100" y="245" width="20" height="10" fill="#6b7280"/>
+  <rect x="130" y="245" width="20" height="10" fill="#374151"/>
+  
+  <!-- Entrada principal -->
+  <rect x="180" y="220" width="40" height="20" fill="#78716c"/>
+  
+  <!-- Texto -->
+  <text x="200" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#374151">
+    Vista Aérea - Marlett
+  </text>
+  <text x="200" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7280">
+    Complejo con 4 salones privados y estacionamiento
+  </text>
+</svg>
