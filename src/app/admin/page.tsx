@@ -10,6 +10,7 @@ import {
   fetchReservationsAsync,
   updateReservationAsync,
   deleteReservationAsync,
+  getPricingConfig,
   getPricingConfigAsync,
   updatePricingConfigAsync
 } from '@/lib/reservations';
