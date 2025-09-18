@@ -1099,7 +1099,7 @@ export default function MarlettReservations() {
         </div>
         {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl">
+          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl hover-lift">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-gradient-to-br from-stone-600 to-stone-700 rounded-xl flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-white" />
@@ -1111,7 +1111,7 @@ export default function MarlettReservations() {
             </div>
           </div>
           
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl">
+          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl hover-lift">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-gradient-to-br from-green-700 to-green-800 rounded-xl flex items-center justify-center">
                 <Award className="w-6 h-6 text-white" />
@@ -1123,7 +1123,7 @@ export default function MarlettReservations() {
           </div>
         </div>
 
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl">
+          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl hover-lift">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-amber-700 rounded-xl flex items-center justify-center">
                 <Clock className="w-6 h-6 text-white" />
@@ -1135,7 +1135,7 @@ export default function MarlettReservations() {
             </div>
           </div>
           
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl">
+          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl hover-lift">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-gradient-to-br from-stone-700 to-stone-800 rounded-xl flex items-center justify-center">
                 <Building2 className="w-6 h-6 text-white" />
