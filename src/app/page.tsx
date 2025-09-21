@@ -926,7 +926,7 @@ export default function MarlettReservations() {
     // Validar contenido inapropiado en campos de texto
     if (!isAnonymous) {
       if (containsInappropriateContent(formData.name)) {
-        alert('El nombre contiene contenido inapropiado. Por favor usa un lenguaje respetuoso.');
+        alert('Contenido no permitido en el nombre. Usa un lenguaje apropiado.');
         return;
       }
     }
@@ -936,7 +936,7 @@ export default function MarlettReservations() {
     if (!selectedEvent) return;
     
     if (containsInappropriateContent(selectedEvent.name)) {
-      alert('El tipo de evento seleccionado contiene contenido inapropiado. Por favor selecciona otro tipo de evento.');
+      alert('Tipo de evento no permitido. Selecciona un evento apropiado.');
       return;
     }
 
@@ -1004,12 +1004,12 @@ export default function MarlettReservations() {
     
     // Validar contenido apropiado
     if (containsInappropriateContent(trimmed)) {
-      setCustomEventError('El tipo de evento contiene contenido inapropiado. Por favor usa un lenguaje respetuoso.');
+      setCustomEventError('Contenido no permitido. Usa un lenguaje apropiado para eventos familiares.');
       return;
     }
     
     if (!isValidEventType(trimmed)) {
-      setCustomEventError('Por favor ingresa un tipo de evento válido y apropiado para un restaurante familiar (ej: Cumpleaños, Reunión Familiar, Celebración, etc.).');
+      setCustomEventError('Ingresa un evento apropiado (ej: Cumpleaños, Boda, Graduación, Reunión).');
       return;
     }
     
@@ -1271,8 +1271,8 @@ export default function MarlettReservations() {
                       )}
                       
                       <div className="text-xs text-stone-500">
-                        <p><strong>Eventos apropiados:</strong> Cumpleaños, Bodas, Graduaciones, Reuniones Familiares, Eventos Corporativos, Celebraciones, Aniversarios, etc.</p>
-                        <p><strong>No permitidos:</strong> Contenido ofensivo, actividades ilegales, eventos inapropiados para un restaurante familiar.</p>
+                        <p><strong>✅ Permitidos:</strong> Cumpleaños, Bodas, Graduaciones, Reuniones, Eventos Corporativos, Celebraciones, Aniversarios</p>
+                        <p><strong>❌ No permitidos:</strong> Contenido ofensivo, sexual, racista, violento o inapropiado</p>
                       </div>
                     </div>
                   </div>
@@ -1657,8 +1657,8 @@ export default function MarlettReservations() {
                     Política de Contenido
                   </h4>
                   <p className="text-sm text-blue-700">
-                    Marlett es un restaurante familiar. Todos los eventos deben ser apropiados y respetuosos. 
-                    No se permiten contenidos ofensivos, actividades ilegales o eventos inapropiados para un ambiente familiar.
+                    <strong>Restaurante familiar:</strong> Solo eventos apropiados y respetuosos. 
+                    Sin contenido ofensivo, sexual, racista o violento.
                   </p>
                 </div>
 

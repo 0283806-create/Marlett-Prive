@@ -8,11 +8,20 @@ const inappropriateWords = [
   'estúpido', 'estúpida', 'idiota', 'retrasado', 'retrasada', 'maricón',
   'marica', 'bollera', 'tortillera', 'perra', 'zorra', 'golfa',
   
-  // Contenido sexual explícito
+  // Contenido sexual explícito y anatómico
   'sexo', 'porno', 'pornografía', 'prostituta', 'prostituto', 'escort',
   'stripper', 'striptease', 'orgía', 'gang bang', 'bukkake', 'fetiche',
   'bdsm', 'sadomasoquismo', 'masturbación', 'masturbarse', 'correrse',
   'eyacular', 'penetrar', 'follar', 'coger', 'tirar', 'culear',
+  'pene', 'penes', 'verga', 'vergas', 'polla', 'pollas', 'pito', 'pitos',
+  'vagina', 'vaginas', 'concha', 'conchas', 'chocha', 'chochas', 'coño', 'coños',
+  'tetas', 'teta', 'chichis', 'chichi', 'pechos', 'senos', 'nalgas', 'culo', 'culos',
+  'trasero', 'pompis', 'ano', 'anos', 'ojete', 'ojetes', 'clítoris',
+  'testículos', 'huevos', 'bolas', 'pelotas', 'escroto',
+  'dick', 'cock', 'penis', 'pussy', 'vagina', 'tits', 'boobs', 'ass', 'butt',
+  'anus', 'asshole', 'balls', 'testicles', 'scrotum', 'clitoris',
+  'blowjob', 'handjob', 'footjob', 'titjob', 'anal', 'oral',
+  'mamada', 'chupada', 'pete', 'oral', 'anal', 'sexo oral', 'sexo anal',
   
   // Drogas y sustancias
   'cocaína', 'heroína', 'marihuana', 'cannabis', 'éxtasis', 'lsd',
@@ -116,7 +125,21 @@ const inappropriatePatterns = [
   /f[4a@]gg[0o]t/i,
   /[kc][1i!]k[3e]/i,
   /sp[1i!]c/i,
-  /ch[1i!]nk/i
+  /ch[1i!]nk/i,
+  
+  // Patrones de contenido sexual con evasiones
+  /p[3e]n[3e]/i, // pene con números
+  /v[3e]rg[4a]/i, // verga con números
+  /p[0o]ll[4a]/i, // polla con números
+  /[ck][0o]n[ck]h[4a]/i, // concha con variaciones
+  /[ck][0o]ñ[0o]/i, // coño con números
+  /t[3e]t[4a]s?/i, // tetas con números
+  /[ck]ul[0o]/i, // culo con números
+  /n[4a]lg[4a]s/i, // nalgas con números
+  /d[1i!][ck]k/i, // dick con números
+  /[ck][0o][ck]k/i, // cock con números
+  /p[0o]rn[0o]/i, // porno con números
+  /s[3e]x[0o]/i // sexo con números
 ];
 
 export function containsInappropriateContent(text: string): boolean {
@@ -166,7 +189,15 @@ export function containsInappropriateContent(text: string): boolean {
     /\bn\s*e\s*g\s*r\s*o/i,
     /\bj\s*u\s*d\s*i\s*o/i,
     /\bm\s*o\s*r\s*o/i,
-    /\bg\s*i\s*t\s*a\s*n\s*o/i
+    /\bg\s*i\s*t\s*a\s*n\s*o/i,
+    /\bp\s*e\s*n\s*e/i,
+    /\bv\s*e\s*r\s*g\s*a/i,
+    /\bp\s*o\s*l\s*l\s*a/i,
+    /\bc\s*o\s*ñ\s*o/i,
+    /\bt\s*e\s*t\s*a\s*s/i,
+    /\bc\s*u\s*l\s*o/i,
+    /\bs\s*e\s*x\s*o/i,
+    /\bp\s*o\s*r\s*n\s*o/i
   ];
   
   for (const pattern of evasionPatterns) {
@@ -248,11 +279,11 @@ export function sanitizeText(text: string): string {
 
 export function getInappropriateContentMessage(text: string): string {
   if (containsInappropriateContent(text)) {
-    return 'El contenido ingresado contiene palabras o frases inapropiadas. Por favor, utiliza un lenguaje respetuoso y apropiado para eventos familiares.';
+    return 'Contenido no permitido. Usa un lenguaje apropiado para eventos familiares.';
   }
   
   if (!isValidEventType(text)) {
-    return 'Por favor, ingresa un tipo de evento válido y apropiado para un restaurante familiar (ej: Cumpleaños, Boda, Evento Corporativo, Graduación, etc.).';
+    return 'Ingresa un evento apropiado (ej: Cumpleaños, Boda, Graduación, Reunión).';
   }
   
   return '';
