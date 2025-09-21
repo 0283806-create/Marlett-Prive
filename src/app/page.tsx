@@ -1097,56 +1097,7 @@ export default function MarlettReservations() {
             </div>
           </div>
         </div>
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl hover-lift">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-stone-600 to-stone-700 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                  <p className="text-2xl font-bold text-stone-800">{getActiveReservations(reservations).length}</p>
-                  <p className="text-stone-600">Reservas Activas</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl hover-lift">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-700 to-green-800 rounded-xl flex items-center justify-center">
-                <Award className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-stone-800">{getActiveReservations(reservations).filter(r => r.status === 'confirmed').length}</p>
-                <p className="text-stone-600">Confirmadas</p>
-              </div>
-          </div>
-        </div>
-
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl hover-lift">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-amber-700 rounded-xl flex items-center justify-center">
-                <Clock className="w-6 h-6 text-white" />
-          </div>
-              <div>
-                <p className="text-2xl font-bold text-stone-800">{getActiveReservations(reservations).filter(r => r.status === 'pending').length}</p>
-                <p className="text-stone-600">Pendientes</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl hover-lift">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-stone-700 to-stone-800 rounded-xl flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-stone-800">{rooms.length}</p>
-                <p className="text-stone-600">Salones Disponibles</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Estadísticas eliminadas por solicitud */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Panel Izquierdo - Nueva Reserva */}
