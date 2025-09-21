@@ -26,9 +26,32 @@ const inappropriateWords = [
   'secuestrar', 'bomba', 'explosivo', 'terrorismo', 'terrorista',
   'arma', 'pistola', 'rifle', 'escopeta', 'cuchillo', 'navaja',
   
-  // Contenido discriminatorio
+  // Contenido discriminatorio y racista (español)
   'nazi', 'fascista', 'racista', 'xenófobo', 'homófobo', 'transfóbico',
   'supremacista', 'ku klux klan', 'kkk', 'hitler', 'holocausto',
+  'negro de mierda', 'pinche negro', 'indio', 'naco', 'nacos', 'prieto', 'prieta',
+  'mayate', 'chinito', 'chino de mierda', 'judío', 'judía', 'moro', 'mora',
+  'gitano', 'gitana', 'sudaca', 'sudacas', 'pocho', 'pocha', 'gringo',
+  'gabacho', 'gabacha', 'güero pendejo', 'blanquito', 'blanquita',
+  'indígena de mierda', 'oaxaco', 'oaxaca', 'chiapaneco', 'yucateco',
+  'norteño', 'sureño', 'chilango', 'provinciano', 'pueblerino',
+  'wetback', 'beaner', 'spic', 'taco bender', 'border hopper',
+  
+  // Contenido discriminatorio (inglés)
+  'nigger', 'nigga', 'negro', 'coon', 'spook', 'jungle bunny',
+  'cotton picker', 'porch monkey', 'uncle tom', 'house nigger',
+  'chink', 'gook', 'slant eye', 'yellow', 'jap', 'nip', 'rice eater',
+  'towelhead', 'sand nigger', 'camel jockey', 'terrorist', 'bomber',
+  'kike', 'heeb', 'jew boy', 'christ killer', 'money grubber',
+  'wetback', 'beaner', 'spic', 'taco bender', 'fence jumper',
+  'cracker', 'honky', 'white trash', 'redneck', 'hillbilly',
+  'faggot', 'fag', 'dyke', 'queer', 'homo', 'tranny', 'shemale',
+  'retard', 'retarded', 'mongoloid', 'downs', 'autistic',
+  
+  // Supremacismo blanco
+  'white power', 'white pride', 'aryan', 'master race', 'pure blood',
+  'blood and soil', 'fourteen words', '14 words', 'heil hitler',
+  'sieg heil', 'swastika', 'confederate', 'dixie', 'rebel flag',
   
   // Actividades ilegales
   'lavado de dinero', 'blanqueo', 'evasión fiscal', 'soborno', 'corrupción',
@@ -54,21 +77,46 @@ const inappropriateWords = [
 ];
 
 const inappropriatePatterns = [
-  // Patrones de texto problemático
-  /\b(fuck|shit|damn|hell|bitch|asshole|bastard)\b/i,
-  /\b(drug\s+deal|sell\s+drugs|buy\s+drugs)\b/i,
-  /\b(kill\s+someone|murder\s+plan|assassination)\b/i,
-  /\b(sex\s+party|orgy|gang\s+bang)\b/i,
-  /\b(nazi\s+party|white\s+power|heil\s+hitler)\b/i,
-  /\b(suicide\s+pact|mass\s+suicide)\b/i,
-  /\b(money\s+laundering|tax\s+evasion)\b/i,
+  // Patrones de texto problemático en inglés
+  /\b(fuck|shit|damn|hell|bitch|asshole|bastard|motherfucker|cocksucker)\b/i,
+  /\b(drug\s+deal|sell\s+drugs|buy\s+drugs|drug\s+party)\b/i,
+  /\b(kill\s+someone|murder\s+plan|assassination|mass\s+shooting)\b/i,
+  /\b(sex\s+party|orgy|gang\s+bang|bukkake\s+party)\b/i,
+  /\b(nazi\s+party|white\s+power|heil\s+hitler|white\s+supremacy)\b/i,
+  /\b(suicide\s+pact|mass\s+suicide|kill\s+yourself)\b/i,
+  /\b(money\s+laundering|tax\s+evasion|drug\s+trafficking)\b/i,
+  
+  // Patrones racistas específicos en español
+  /\b(negro\s+de\s+mierda|pinche\s+negro|indio\s+pendejo)\b/i,
+  /\b(chino\s+de\s+mierda|judío\s+avaro|moro\s+terrorista)\b/i,
+  /\b(gitano\s+ladrón|sudaca\s+de\s+mierda|gringo\s+pendejo)\b/i,
+  /\b(poder\s+blanco|raza\s+superior|sangre\s+pura)\b/i,
+  /\b(muerte\s+a\s+los|exterminar\s+a|eliminar\s+a)\b/i,
+  
+  // Patrones racistas en inglés
+  /\b(white\s+power|black\s+lives\s+don't\s+matter|all\s+lives\s+matter)\b/i,
+  /\b(send\s+them\s+back|go\s+back\s+to|you\s+people)\b/i,
+  /\b(master\s+race|pure\s+blood|racial\s+purity)\b/i,
+  /\b(kill\s+all|death\s+to|exterminate)\b/i,
+  /\b(lynch|lynching|hang\s+them|burn\s+them)\b/i,
+  
+  // Códigos y símbolos de odio
+  /\b(1488|14\/88|88|hh|wp)\b/i,
+  /\b(blood\s+and\s+honor|rahowa|zog)\b/i,
   
   // Patrones de repetición de caracteres (spam)
   /(.)\1{4,}/i, // 5 o más caracteres repetidos
   
   // Patrones de texto sin sentido
   /^[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s]{5,}$/i, // Solo símbolos/números
-  /^\s*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+\s*$/i // Solo símbolos
+  /^\s*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+\s*$/i, // Solo símbolos
+  
+  // Patrones de evasión (números por letras)
+  /n[1i!]gg[3e]r/i,
+  /f[4a@]gg[0o]t/i,
+  /[kc][1i!]k[3e]/i,
+  /sp[1i!]c/i,
+  /ch[1i!]nk/i
 ];
 
 export function containsInappropriateContent(text: string): boolean {
@@ -76,15 +124,52 @@ export function containsInappropriateContent(text: string): boolean {
   
   const normalizedText = text.toLowerCase().trim();
   
-  // Verificar palabras prohibidas
+  // Normalizar texto para detectar evasiones comunes
+  const cleanedText = normalizedText
+    .replace(/[0@]/g, 'o')
+    .replace(/[1!]/g, 'i')
+    .replace(/[3]/g, 'e')
+    .replace(/[4@]/g, 'a')
+    .replace(/[5]/g, 's')
+    .replace(/[7]/g, 't')
+    .replace(/[8]/g, 'b')
+    .replace(/[\-_\.\s]+/g, ' ') // Espacios, guiones, puntos a espacios
+    .replace(/\s+/g, ' '); // Múltiples espacios a uno
+  
+  // Verificar palabras prohibidas en texto original
   for (const word of inappropriateWords) {
-    if (normalizedText.includes(word.toLowerCase())) {
+    const wordLower = word.toLowerCase();
+    if (normalizedText.includes(wordLower)) {
+      return true;
+    }
+    // También verificar en texto limpio (anti-evasión)
+    if (cleanedText.includes(wordLower)) {
       return true;
     }
   }
   
   // Verificar patrones problemáticos
   for (const pattern of inappropriatePatterns) {
+    if (pattern.test(normalizedText) || pattern.test(cleanedText)) {
+      return true;
+    }
+  }
+  
+  // Verificar variaciones con espacios entre letras (n i g g e r)
+  const spacedPattern = /\b[nñ]\s*[i1!]\s*[gq]\s*[gq]\s*[e3]\s*[r]\b/i;
+  if (spacedPattern.test(normalizedText)) {
+    return true;
+  }
+  
+  // Verificar otros patrones de evasión comunes
+  const evasionPatterns = [
+    /\bn\s*e\s*g\s*r\s*o/i,
+    /\bj\s*u\s*d\s*i\s*o/i,
+    /\bm\s*o\s*r\s*o/i,
+    /\bg\s*i\s*t\s*a\s*n\s*o/i
+  ];
+  
+  for (const pattern of evasionPatterns) {
     if (pattern.test(normalizedText)) {
       return true;
     }

@@ -930,9 +930,15 @@ export default function MarlettReservations() {
         return;
       }
     }
-
+    
+    // Validar que el tipo de evento seleccionado sea apropiado
     const selectedEvent = eventTypes.find(e => e.id === selectedEventType);
     if (!selectedEvent) return;
+    
+    if (containsInappropriateContent(selectedEvent.name)) {
+      alert('El tipo de evento seleccionado contiene contenido inapropiado. Por favor selecciona otro tipo de evento.');
+      return;
+    }
 
     const guests = parseInt(formData.guests);
     const duration = parseInt(formData.duration);
