@@ -13,6 +13,12 @@ import {
   type Reservation,
   type PricingConfig 
 } from '@/lib/reservations';
+import { 
+  containsInappropriateContent, 
+  isValidEventType, 
+  sanitizeText, 
+  getInappropriateContentMessage 
+} from '@/lib/profanity-filter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -135,6 +141,7 @@ interface CustomMenu {
 export default function MarlettReservations() {
   const [selectedEventType, setSelectedEventType] = useState<string>('');
   const [customEventType, setCustomEventType] = useState<string>('');
+  const [customEventError, setCustomEventError] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showEventModal, setShowEventModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
@@ -865,9 +872,11 @@ export default function MarlettReservations() {
       return false; // No mostrar nada si no hay búsqueda
     }
     
-    const matchesText = reservation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      reservation.eventType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      reservation.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const query = searchQuery.toLowerCase();
+    const matchesText = reservation.name.toLowerCase().includes(query) ||
+      reservation.eventType.toLowerCase().includes(query) ||
+      reservation.email.toLowerCase().includes(query) ||
+      (reservation.ownerId ? reservation.ownerId.toLowerCase().includes(query) : false);
     
     const matchesDate = reservation.date.includes(searchQuery) || 
       (searchQuery.includes('-') && reservation.date === searchQuery.split('-').reverse().join('/'));
@@ -914,19 +923,39 @@ export default function MarlettReservations() {
       return;
     }
 
+    // Validar contenido inapropiado en campos de texto
+    if (!isAnonymous) {
+      if (containsInappropriateContent(formData.name)) {
+        alert('El nombre contiene contenido inapropiado. Por favor usa un lenguaje respetuoso.');
+        return;
+      }
+    }
+    
+    // Validar que el tipo de evento seleccionado sea apropiado
     const selectedEvent = eventTypes.find(e => e.id === selectedEventType);
     if (!selectedEvent) return;
+    
+    if (containsInappropriateContent(selectedEvent.name)) {
+      alert('El tipo de evento seleccionado contiene contenido inapropiado. Por favor selecciona otro tipo de evento.');
+      return;
+    }
 
     const guests = parseInt(formData.guests);
     const duration = parseInt(formData.duration);
     
     const pricing = calculatePrice(selectedEvent, guests, ['room1'], duration);
+    const currentUserId = typeof window !== 'undefined' ? (localStorage.getItem('marlett-user-id') || (() => { const v = crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`; localStorage.setItem('marlett-user-id', v); return v; })()) : undefined;
     
     const newReservation: Reservation = {
       id: `${Date.now()}`,
+      ownerId: currentUserId,
+      isAnonymous,
       name: isAnonymous ? 'Evento Anónimo' : formData.name,
       email: isAnonymous ? 'anonimo@marlett.com' : formData.email,
       phone: isAnonymous ? 'Privado' : formData.phone,
+      realName: isAnonymous ? formData.name : undefined,
+      realEmail: isAnonymous ? formData.email : undefined,
+      realPhone: isAnonymous ? formData.phone : undefined,
       date: selectedDate.split('-').reverse().join('/'),
       time: formData.time,
       duration: duration,
@@ -963,11 +992,39 @@ export default function MarlettReservations() {
   };
 
   const addCustomEventType = () => {
-    if (!customEventType.trim()) return;
+    const trimmed = customEventType.trim();
+    
+    // Limpiar error previo
+    setCustomEventError('');
+    
+    if (!trimmed) {
+      setCustomEventError('Por favor ingresa un tipo de evento.');
+      return;
+    }
+    
+    // Validar contenido apropiado
+    if (containsInappropriateContent(trimmed)) {
+      setCustomEventError('El tipo de evento contiene contenido inapropiado. Por favor usa un lenguaje respetuoso.');
+      return;
+    }
+    
+    if (!isValidEventType(trimmed)) {
+      setCustomEventError('Por favor ingresa un tipo de evento válido y apropiado para un restaurante familiar (ej: Cumpleaños, Reunión Familiar, Celebración, etc.).');
+      return;
+    }
+    
+    // Verificar que no sea duplicado
+    const exists = eventTypes.some(et => et.name.toLowerCase() === trimmed.toLowerCase());
+    if (exists) {
+      setCustomEventError('Este tipo de evento ya existe. Por favor elige otro nombre.');
+      return;
+    }
+    
+    const sanitized = sanitizeText(trimmed);
     
     const newEventType: EventType = {
       id: `custom_${Date.now()}`,
-      name: customEventType,
+      name: sanitized,
       icon: <Star className="w-8 h-8" />,
       description: 'Evento personalizado',
       basePricePerPerson: 40,
@@ -985,6 +1042,7 @@ export default function MarlettReservations() {
 
     setEventTypes(prev => [...prev, newEventType]);
     setCustomEventType('');
+    setCustomEventError('');
   };
 
   return (
@@ -997,7 +1055,30 @@ export default function MarlettReservations() {
           <div className="max-w-7xl mx-auto px-6 py-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-6">
-                <div className="relative group">
+                <div 
+                  className="relative group cursor-pointer"
+                  onClick={() => {
+                    // Secret admin access: 7 clicks within 8 seconds
+                    const count = Number(sessionStorage.getItem('adm_clicks') || '0') + 1;
+                    sessionStorage.setItem('adm_clicks', String(count));
+                    const first = Number(sessionStorage.getItem('adm_first_ts') || '0');
+                    const now = Date.now();
+                    if (!first) sessionStorage.setItem('adm_first_ts', String(now));
+                    const within8s = first && now - first < 8000;
+                    if (within8s && count >= 7) {
+                      const k = prompt('Acceso restringido. Ingresa la clave:');
+                      if (k && k.trim() === (process.env.NEXT_PUBLIC_ADMIN_KEY || 'marlett-admin')) {
+                        localStorage.setItem('marlett-admin-token', '1');
+                        window.location.href = '/admin';
+                      }
+                      sessionStorage.removeItem('adm_clicks');
+                      sessionStorage.removeItem('adm_first_ts');
+                    } else if (!within8s && count > 1) {
+                      sessionStorage.setItem('adm_clicks', '1');
+                      sessionStorage.setItem('adm_first_ts', String(now));
+                    }
+                  }}
+                >
                   <div className="w-48 h-20 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-300 border border-white/20">
                     <img 
                       src="/marlett-logo.svg" 
@@ -1042,27 +1123,9 @@ export default function MarlettReservations() {
                   División de Salones
                 </Button>
 
-                <Button
-                  onClick={() => (window.location.href = '/admin')}
-                  className="bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 transition-all duration-300"
-                >
-                  <Settings className="w-5 h-5 mr-2" />
-                  Admin
-                </Button>
+                {/* Admin button removed - access via secret logo clicks */}
                 
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
-                  <div className="relative bg-white/20 backdrop-blur-xl rounded-2xl border border-white/30 p-2">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
-                    <Input
-                      type="text"
-                      placeholder="Buscar reservas..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-12 w-80 bg-transparent border-0 text-white placeholder:text-white/70 focus:ring-0 focus:outline-none text-lg"
-                    />
-                  </div>
-                </div>
+                {/* Header search bar removed - search moved to reservations panel */}
               </div>
             </div>
           </div>
@@ -1097,56 +1160,7 @@ export default function MarlettReservations() {
             </div>
           </div>
         </div>
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-stone-600 to-stone-700 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                  <p className="text-2xl font-bold text-stone-800">{getActiveReservations(reservations).length}</p>
-                  <p className="text-stone-600">Reservas Activas</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-700 to-green-800 rounded-xl flex items-center justify-center">
-                <Award className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-stone-800">{getActiveReservations(reservations).filter(r => r.status === 'confirmed').length}</p>
-                <p className="text-stone-600">Confirmadas</p>
-              </div>
-          </div>
-        </div>
-
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-amber-700 rounded-xl flex items-center justify-center">
-                <Clock className="w-6 h-6 text-white" />
-          </div>
-              <div>
-                <p className="text-2xl font-bold text-stone-800">{getActiveReservations(reservations).filter(r => r.status === 'pending').length}</p>
-                <p className="text-stone-600">Pendientes</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-stone-200 shadow-xl">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-stone-700 to-stone-800 rounded-xl flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-stone-800">{rooms.length}</p>
-                <p className="text-stone-600">Salones Disponibles</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Statistics section removed per request */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Panel Izquierdo - Nueva Reserva */}
@@ -1227,17 +1241,39 @@ export default function MarlettReservations() {
                     <Label className="text-lg font-semibold text-stone-800 mb-3 block">
                       ¿No encuentras tu tipo de evento?
                     </Label>
-                    <div className="flex gap-3">
-                      <Input
-                        placeholder="Describe tu evento personalizado..."
-                        value={customEventType}
-                        onChange={(e) => setCustomEventType(e.target.value)}
-                        className="flex-1"
-                      />
-                      <Button onClick={addCustomEventType} className="bg-green-700 hover:bg-green-800">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Agregar
-                      </Button>
+                    <div className="space-y-3">
+                      <div className="flex gap-3">
+                        <Input
+                          placeholder="Ej: Reunión Familiar, Celebración de Logros, Cena de Amigos..."
+                          value={customEventType}
+                          onChange={(e) => {
+                            setCustomEventType(e.target.value);
+                            setCustomEventError('');
+                          }}
+                          className={`flex-1 ${customEventError ? 'border-red-300 focus:ring-red-500' : ''}`}
+                          maxLength={50}
+                        />
+                        <Button 
+                          onClick={addCustomEventType} 
+                          className="bg-green-700 hover:bg-green-800"
+                          disabled={!customEventType.trim()}
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Agregar
+                        </Button>
+                      </div>
+                      
+                      {customEventError && (
+                        <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                          <p className="text-sm text-red-700">{customEventError}</p>
+                        </div>
+                      )}
+                      
+                      <div className="text-xs text-stone-500">
+                        <p><strong>Eventos apropiados:</strong> Cumpleaños, Bodas, Graduaciones, Reuniones Familiares, Eventos Corporativos, Celebraciones, Aniversarios, etc.</p>
+                        <p><strong>No permitidos:</strong> Contenido ofensivo, actividades ilegales, eventos inapropiados para un restaurante familiar.</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1271,10 +1307,14 @@ export default function MarlettReservations() {
                       <Input
                         id="name"
                         value={formData.name}
-                        onChange={(e) => setFormData(prev => ({...prev, name: e.target.value}))}
+                        onChange={(e) => {
+                          const value = sanitizeText(e.target.value);
+                          setFormData(prev => ({...prev, name: value}));
+                        }}
                         disabled={isAnonymous}
                         placeholder={isAnonymous ? "Se mostrará como 'Evento Anónimo'" : "Ingresa tu nombre"}
                         className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all duration-300 disabled:bg-gray-100"
+                        maxLength={50}
                       />
                     </div>
                     
@@ -1610,6 +1650,18 @@ export default function MarlettReservations() {
                   </div>
                 </div>
 
+                {/* Política de Contenido */}
+                <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                  <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    Política de Contenido
+                  </h4>
+                  <p className="text-sm text-blue-700">
+                    Marlett es un restaurante familiar. Todos los eventos deben ser apropiados y respetuosos. 
+                    No se permiten contenidos ofensivos, actividades ilegales o eventos inapropiados para un ambiente familiar.
+                  </p>
+                </div>
+
                 {/* Botón de Crear Reserva */}
                 <Button 
                   onClick={createReservation}
@@ -1645,7 +1697,7 @@ export default function MarlettReservations() {
                   </Label>
                   <Input
                     type="text"
-                    placeholder="Buscar por nombre, evento o fecha (dd/mm/yyyy)"
+                    placeholder="Buscar por nombre, evento, fecha o ID de usuario"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="h-10 bg-white border-stone-200 rounded-lg focus:ring-2 focus:ring-green-600"
@@ -1678,10 +1730,10 @@ export default function MarlettReservations() {
                       </div>
                       <h3 className="text-xl font-semibold text-stone-800 mb-2">Buscar Reservas</h3>
                       <p className="text-stone-600 mb-4">
-                        Ingresa un nombre, email, tipo de evento o fecha para buscar reservas específicas.
+                        Ingresa un nombre, email, tipo de evento, fecha o ID de usuario para buscar reservas específicas.
                       </p>
                       <p className="text-sm text-stone-500">
-                        Ejemplo: "María", "Boda", "14/12/2024" o "2024-12-14"
+                        Ejemplo: "María", "Boda", "14/12/2024", "2024-12-14" o tu ID de usuario para eventos anónimos
                       </p>
                     </div>
                   ) : filteredReservations.length === 0 ? (
