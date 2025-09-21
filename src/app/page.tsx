@@ -997,7 +997,27 @@ export default function MarlettReservations() {
           <div className="max-w-7xl mx-auto px-6 py-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-6">
-                <div className="relative group">
+                <div className="relative group" onClick={() => {
+                  // Acceso secreto: 7 clics rápidos o tecla secreta
+                  const count = Number(sessionStorage.getItem('adm_clicks') || '0') + 1;
+                  sessionStorage.setItem('adm_clicks', String(count));
+                  const first = Number(sessionStorage.getItem('adm_first_ts') || '0');
+                  const now = Date.now();
+                  if (!first) sessionStorage.setItem('adm_first_ts', String(now));
+                  const within8s = first && now - first < 8000;
+                  if (within8s && count >= 7) {
+                    const k = prompt('Acceso restringido. Ingresa la clave:');
+                    if (k && k.trim() === (process.env.NEXT_PUBLIC_ADMIN_KEY || 'marlett-admin')) {
+                      localStorage.setItem('marlett-admin-token', '1');
+                      window.location.href = '/admin';
+                    }
+                    sessionStorage.removeItem('adm_clicks');
+                    sessionStorage.removeItem('adm_first_ts');
+                  } else if (!within8s && count > 1) {
+                    sessionStorage.setItem('adm_clicks', '1');
+                    sessionStorage.setItem('adm_first_ts', String(now));
+                  }
+                }}>
                   <div className="w-48 h-20 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-300 border border-white/20">
                     <img 
                       src="/marlett-logo.svg" 
@@ -1042,13 +1062,7 @@ export default function MarlettReservations() {
                   División de Salones
                 </Button>
 
-                <Button
-                  onClick={() => (window.location.href = '/admin')}
-                  className="bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 transition-all duration-300"
-                >
-                  <Settings className="w-5 h-5 mr-2" />
-                  Admin
-                </Button>
+                {/* Acceso Admin oculto: se quita botón visible */}
                 
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
