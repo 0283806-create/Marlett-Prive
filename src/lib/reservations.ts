@@ -20,9 +20,14 @@ export const defaultPricing: PricingConfig = {
 };
 export interface Reservation {
   id: string;
+  ownerId?: string;
+  isAnonymous?: boolean;
   name: string;
   email: string;
   phone: string;
+  realName?: string;
+  realEmail?: string;
+  realPhone?: string;
   date: string;
   time: string;
   duration: number;
@@ -249,9 +254,14 @@ type Json = Record<string, any> | any[] | string | number | boolean | null;
 function toSnakeCaseReservation(reservation: Reservation): Record<string, Json> {
   return {
     id: reservation.id,
+    owner_id: reservation.ownerId ?? null,
+    is_anonymous: reservation.isAnonymous ?? null,
     name: reservation.name,
     email: reservation.email,
     phone: reservation.phone,
+    real_name: reservation.realName ?? null,
+    real_email: reservation.realEmail ?? null,
+    real_phone: reservation.realPhone ?? null,
     date: reservation.date,
     time: reservation.time,
     duration: reservation.duration,
@@ -273,9 +283,14 @@ function toSnakeCaseReservation(reservation: Reservation): Record<string, Json> 
 function fromSnakeCaseReservation(row: any): Reservation {
   return {
     id: String(row.id),
+    ownerId: row.owner_id ?? row.ownerId,
+    isAnonymous: row.is_anonymous ?? row.isAnonymous,
     name: row.name,
     email: row.email,
     phone: row.phone,
+    realName: row.real_name ?? row.realName,
+    realEmail: row.real_email ?? row.realEmail,
+    realPhone: row.real_phone ?? row.realPhone,
     date: row.date,
     time: row.time,
     duration: row.duration,
