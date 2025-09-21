@@ -13,6 +13,12 @@ import {
   type Reservation,
   type PricingConfig 
 } from '@/lib/reservations';
+import { 
+  containsInappropriateContent, 
+  isValidEventType, 
+  sanitizeText, 
+  getInappropriateContentMessage 
+} from '@/lib/profanity-filter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -135,6 +141,7 @@ interface CustomMenu {
 export default function MarlettReservations() {
   const [selectedEventType, setSelectedEventType] = useState<string>('');
   const [customEventType, setCustomEventType] = useState<string>('');
+  const [customEventError, setCustomEventError] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showEventModal, setShowEventModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
@@ -916,6 +923,14 @@ export default function MarlettReservations() {
       return;
     }
 
+    // Validar contenido inapropiado en campos de texto
+    if (!isAnonymous) {
+      if (containsInappropriateContent(formData.name)) {
+        alert('El nombre contiene contenido inapropiado. Por favor usa un lenguaje respetuoso.');
+        return;
+      }
+    }
+
     const selectedEvent = eventTypes.find(e => e.id === selectedEventType);
     if (!selectedEvent) return;
 
@@ -971,11 +986,39 @@ export default function MarlettReservations() {
   };
 
   const addCustomEventType = () => {
-    if (!customEventType.trim()) return;
+    const trimmed = customEventType.trim();
+    
+    // Limpiar error previo
+    setCustomEventError('');
+    
+    if (!trimmed) {
+      setCustomEventError('Por favor ingresa un tipo de evento.');
+      return;
+    }
+    
+    // Validar contenido apropiado
+    if (containsInappropriateContent(trimmed)) {
+      setCustomEventError('El tipo de evento contiene contenido inapropiado. Por favor usa un lenguaje respetuoso.');
+      return;
+    }
+    
+    if (!isValidEventType(trimmed)) {
+      setCustomEventError('Por favor ingresa un tipo de evento válido y apropiado para un restaurante familiar (ej: Cumpleaños, Reunión Familiar, Celebración, etc.).');
+      return;
+    }
+    
+    // Verificar que no sea duplicado
+    const exists = eventTypes.some(et => et.name.toLowerCase() === trimmed.toLowerCase());
+    if (exists) {
+      setCustomEventError('Este tipo de evento ya existe. Por favor elige otro nombre.');
+      return;
+    }
+    
+    const sanitized = sanitizeText(trimmed);
     
     const newEventType: EventType = {
       id: `custom_${Date.now()}`,
-      name: customEventType,
+      name: sanitized,
       icon: <Star className="w-8 h-8" />,
       description: 'Evento personalizado',
       basePricePerPerson: 40,
@@ -993,6 +1036,7 @@ export default function MarlettReservations() {
 
     setEventTypes(prev => [...prev, newEventType]);
     setCustomEventType('');
+    setCustomEventError('');
   };
 
   return (
@@ -1191,17 +1235,39 @@ export default function MarlettReservations() {
                     <Label className="text-lg font-semibold text-stone-800 mb-3 block">
                       ¿No encuentras tu tipo de evento?
                     </Label>
-                    <div className="flex gap-3">
-                      <Input
-                        placeholder="Describe tu evento personalizado..."
-                        value={customEventType}
-                        onChange={(e) => setCustomEventType(e.target.value)}
-                        className="flex-1"
-                      />
-                      <Button onClick={addCustomEventType} className="bg-green-700 hover:bg-green-800">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Agregar
-                      </Button>
+                    <div className="space-y-3">
+                      <div className="flex gap-3">
+                        <Input
+                          placeholder="Ej: Reunión Familiar, Celebración de Logros, Cena de Amigos..."
+                          value={customEventType}
+                          onChange={(e) => {
+                            setCustomEventType(e.target.value);
+                            setCustomEventError('');
+                          }}
+                          className={`flex-1 ${customEventError ? 'border-red-300 focus:ring-red-500' : ''}`}
+                          maxLength={50}
+                        />
+                        <Button 
+                          onClick={addCustomEventType} 
+                          className="bg-green-700 hover:bg-green-800"
+                          disabled={!customEventType.trim()}
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Agregar
+                        </Button>
+                      </div>
+                      
+                      {customEventError && (
+                        <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                          <p className="text-sm text-red-700">{customEventError}</p>
+                        </div>
+                      )}
+                      
+                      <div className="text-xs text-stone-500">
+                        <p><strong>Eventos apropiados:</strong> Cumpleaños, Bodas, Graduaciones, Reuniones Familiares, Eventos Corporativos, Celebraciones, Aniversarios, etc.</p>
+                        <p><strong>No permitidos:</strong> Contenido ofensivo, actividades ilegales, eventos inapropiados para un restaurante familiar.</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1235,10 +1301,14 @@ export default function MarlettReservations() {
                       <Input
                         id="name"
                         value={formData.name}
-                        onChange={(e) => setFormData(prev => ({...prev, name: e.target.value}))}
+                        onChange={(e) => {
+                          const value = sanitizeText(e.target.value);
+                          setFormData(prev => ({...prev, name: value}));
+                        }}
                         disabled={isAnonymous}
                         placeholder={isAnonymous ? "Se mostrará como 'Evento Anónimo'" : "Ingresa tu nombre"}
                         className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all duration-300 disabled:bg-gray-100"
+                        maxLength={50}
                       />
                     </div>
                     
@@ -1572,6 +1642,18 @@ export default function MarlettReservations() {
                       Los salones se asignan automáticamente según el número de invitados y se pueden fusionar para eventos más grandes.
                     </p>
                   </div>
+                </div>
+
+                {/* Política de Contenido */}
+                <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                  <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    Política de Contenido
+                  </h4>
+                  <p className="text-sm text-blue-700">
+                    Marlett es un restaurante familiar. Todos los eventos deben ser apropiados y respetuosos. 
+                    No se permiten contenidos ofensivos, actividades ilegales o eventos inapropiados para un ambiente familiar.
+                  </p>
                 </div>
 
                 {/* Botón de Crear Reserva */}
