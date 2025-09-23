@@ -44,6 +44,10 @@ import {
   Gift
 } from 'lucide-react';
 
+import { downloadReservationPdf } from '@/lib/utils'
+import DownloadPDF from '@/components/DownloadPDF'
+import ExportData from '@/components/ExportData'
+import ReservationsTable from '@/components/ReservationsTable'
 // Interface Reservation importada desde @/lib/reservations
 
 export default function AdminPage() {
@@ -371,7 +375,11 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Lista de Reservas */}
+            {/* Lista de Reservas: tabla con export */}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-stone-800">Reservas</h3>
+              <ExportData data={filteredReservations} />
+            </div>
             <div className="space-y-6">
               {filteredReservations.length === 0 ? (
                 <div className="text-center py-12 bg-stone-50 rounded-2xl border border-stone-200">
@@ -384,6 +392,9 @@ export default function AdminPage() {
                   </p>
                 </div>
               ) : (
+                /* Cambiar lista de tarjetas por tabla */
+                <ReservationsTable reservations={filteredReservations} />
+                /* Mantengo el bloque original comentado para referencia futura
                 filteredReservations.map((reservation) => (
                   <div key={reservation.id} className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-stone-100">
                     <div className="flex items-start justify-between mb-6">
@@ -410,6 +421,13 @@ export default function AdminPage() {
 
                       {/* Acciones de Admin */}
                       <div className="flex gap-2">
+                        <DownloadPDF
+                          event={reservation}
+                          label="PDF"
+                          variant="outline"
+                          size="sm"
+                          className="border-stone-300 hover:border-stone-600"
+                        />
                         <Button
                           onClick={() => {
                             setSelectedReservation(reservation);
@@ -553,7 +571,7 @@ export default function AdminPage() {
                       </div>
                     </div>
                   </div>
-                ))
+                ))*/
               )}
             </div>
           </CardContent>

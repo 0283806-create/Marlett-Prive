@@ -4,3 +4,197 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+// --- PDF generation for Reservation ---
+import { jsPDF } from 'jspdf'
+import type { Reservation } from './reservations'
+
+let cachedLogoDataUrl: string | null = null
+
+async function loadLogoPngDataUrl(): Promise<string | null> {
+  if (cachedLogoDataUrl) return cachedLogoDataUrl
+  try {
+    const response = await fetch('/marlett-logo.svg', { cache: 'force-cache' })
+    if (!response.ok) return null
+    const svgText = await response.text()
+    const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' })
+    const url = URL.createObjectURL(svgBlob)
+
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image()
+      image.onload = () => resolve(image)
+      image.onerror = reject as any
+      image.src = url
+    })
+
+    const canvas = document.createElement('canvas')
+    const targetWidth = 1600
+    const scale = targetWidth / img.width
+    canvas.width = targetWidth
+    canvas.height = Math.max(1, Math.floor(img.height * scale))
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+    const dataUrl = canvas.toDataURL('image/png')
+    URL.revokeObjectURL(url)
+    cachedLogoDataUrl = dataUrl
+    return dataUrl
+  } catch {
+    return null
+  }
+}
+
+export function generateReservationPdf(reservation: Reservation, options?: { logoDataUrl?: string | null }): jsPDF {
+  const doc = new jsPDF()
+
+  const line = (text: string, y: number, x: number = 14) => {
+    doc.text(String(text), x, y)
+  }
+
+  let y = 20
+
+  // Header with logo if available
+  const logo = options?.logoDataUrl
+  if (logo) {
+    try {
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const logoWidth = 60
+      const logoHeight = 18
+      const x = (pageWidth - logoWidth) / 2
+      doc.addImage(logo, 'PNG', x, 10, logoWidth, logoHeight)
+      y = 10 + logoHeight + 6
+    } catch {
+      y = 20
+    }
+  }
+  doc.setFontSize(18)
+  line('Marlett - Detalles de Reserva', y)
+  y += 6
+  doc.setFontSize(11)
+  line('================================', y)
+  y += 10
+
+  const addField = (label: string, value: string | number) => {
+    const text = `${label}: ${value}`
+    const split = doc.splitTextToSize(text, 180)
+    doc.text(split, 14, y)
+    y += (split.length * 6)
+  }
+
+  addField('ID', reservation.id)
+  addField('Nombre', reservation.name)
+  addField('Email', reservation.email)
+  addField('Teléfono', reservation.phone)
+  addField('Tipo de evento', reservation.eventType)
+  addField('Fecha', reservation.date)
+  addField('Hora de inicio', reservation.time)
+  addField('Duración (horas)', reservation.duration)
+  addField('Invitados', reservation.guests)
+  addField('Salones asignados', reservation.rooms.join(', '))
+
+  y += 6
+  doc.setFontSize(13)
+  line('Desglose de precios', y)
+  y += 8
+  doc.setFontSize(11)
+  addField('Base', `$${reservation.priceBreakdown.basePrice.toLocaleString()}`)
+  addField('Horas', `$${reservation.priceBreakdown.hourlyRate.toLocaleString()}`)
+  addField('Salones', `$${reservation.priceBreakdown.roomCost.toLocaleString()}`)
+  addField('Catering', `$${reservation.priceBreakdown.cateringCost.toLocaleString()}`)
+  addField('Decoración', `$${reservation.priceBreakdown.decorationCost.toLocaleString()}`)
+  addField('Audio/Visual', `$${reservation.priceBreakdown.audioVisualCost.toLocaleString()}`)
+  addField('Montaje especial', `$${reservation.priceBreakdown.specialSetupCost.toLocaleString()}`)
+  addField('Total Estimado', `$${reservation.totalPrice.toLocaleString()}`)
+
+  y += 6
+  doc.setFontSize(13)
+  line('Selecciones', y)
+  y += 8
+  doc.setFontSize(11)
+  addField('Catering', reservation.cateringSelection.join(', ') || 'N/A')
+  addField('Decoración', reservation.decorationSelection.join(', ') || 'N/A')
+  addField('Audio/Visual', reservation.audioVisualSelection.join(', ') || 'N/A')
+
+  y += 6
+  addField('Estatus', reservation.status)
+  addField('Creado', reservation.createdAt)
+
+  return doc
+}
+
+export async function downloadReservationPdf(reservation: Reservation): Promise<void> {
+  const logoDataUrl = await loadLogoPngDataUrl()
+  const doc = generateReservationPdf(reservation, { logoDataUrl })
+  doc.save(`reserva-${reservation.id}.pdf`)
+}
+
+// --- Export helpers (CSV/XLSX) ---
+import * as XLSX from 'xlsx'
+
+type FlatReservation = Record<string, string | number | boolean | null>
+
+function flattenReservation(reservation: Reservation): FlatReservation {
+  return {
+    id: reservation.id,
+    name: reservation.name,
+    email: reservation.email,
+    phone: reservation.phone,
+    eventType: reservation.eventType,
+    date: reservation.date,
+    time: reservation.time,
+    duration: reservation.duration,
+    guests: reservation.guests,
+    rooms: reservation.rooms.join(', '),
+    totalPrice: reservation.totalPrice,
+    status: reservation.status,
+    catering: reservation.cateringSelection.join(', '),
+    decoration: reservation.decorationSelection.join(', '),
+    audioVisual: reservation.audioVisualSelection.join(', '),
+    createdAt: reservation.createdAt,
+  }
+}
+
+export function exportReservationsToCSV(reservations: Reservation[], filename = 'reservas.csv'): void {
+  const headers = [
+    'id','name','email','phone','eventType','date','time','duration','guests','rooms','totalPrice','status','catering','decoration','audioVisual','createdAt'
+  ]
+  const rows = reservations.map(flattenReservation)
+  const csv = [headers.join(',')]
+  for (const row of rows) {
+    const values = headers.map((h) => {
+      const v = row[h as keyof FlatReservation]
+      const s = v == null ? '' : String(v)
+      // simple CSV escaping
+      if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+        return '"' + s.replace(/"/g, '""') + '"'
+      }
+      return s
+    })
+    csv.push(values.join(','))
+  }
+  const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
+export function exportReservationsToXLSX(reservations: Reservation[], filename = 'reservas.xlsx'): void {
+  const rows = reservations.map(flattenReservation)
+  const worksheet = XLSX.utils.json_to_sheet(rows)
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reservas')
+  const blob = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' }) as unknown as ArrayBuffer
+  const url = URL.createObjectURL(new Blob([blob], { type: 'application/octet-stream' }))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}

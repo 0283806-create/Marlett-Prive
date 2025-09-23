@@ -20,9 +20,14 @@ export const defaultPricing: PricingConfig = {
 };
 export interface Reservation {
   id: string;
+  ownerId?: string;
+  isAnonymous?: boolean;
   name: string;
   email: string;
   phone: string;
+  realName?: string;
+  realEmail?: string;
+  realPhone?: string;
   date: string;
   time: string;
   duration: number;
@@ -249,9 +254,14 @@ type Json = Record<string, any> | any[] | string | number | boolean | null;
 function toSnakeCaseReservation(reservation: Reservation): Record<string, Json> {
   return {
     id: reservation.id,
+    owner_id: reservation.ownerId ?? null,
+    is_anonymous: reservation.isAnonymous ?? null,
     name: reservation.name,
     email: reservation.email,
     phone: reservation.phone,
+    real_name: reservation.realName ?? null,
+    real_email: reservation.realEmail ?? null,
+    real_phone: reservation.realPhone ?? null,
     date: reservation.date,
     time: reservation.time,
     duration: reservation.duration,
@@ -273,9 +283,14 @@ function toSnakeCaseReservation(reservation: Reservation): Record<string, Json> 
 function fromSnakeCaseReservation(row: any): Reservation {
   return {
     id: String(row.id),
+    ownerId: row.owner_id ?? row.ownerId,
+    isAnonymous: row.is_anonymous ?? row.isAnonymous,
     name: row.name,
     email: row.email,
     phone: row.phone,
+    realName: row.real_name ?? row.realName,
+    realEmail: row.real_email ?? row.realEmail,
+    realPhone: row.real_phone ?? row.realPhone,
     date: row.date,
     time: row.time,
     duration: row.duration,
@@ -304,6 +319,49 @@ export async function fetchReservationsAsync(): Promise<Reservation[]> {
     return data.map(fromSnakeCaseReservation);
   } catch {
     return getReservations();
+  }
+}
+
+// Joined fetch with clients and events (if corresponding tables exist)
+export interface ReservationJoined extends Reservation {
+  client?: { id: string; name: string; email: string; phone: string } | null
+  event?: { id: string; name: string; date: string; place?: string; description?: string } | null
+}
+
+export async function fetchReservationsWithRelationsAsync(): Promise<ReservationJoined[]> {
+  try {
+    const { data, error } = await supabase
+      .from('reservations')
+      .select(`
+        *,
+        clients:clientes(id,name:nombre,email:correo,phone:telefono),
+        events:eventos(id,name:nombre,date:fecha,place:lugar,description:descripcion)
+      `)
+      .order('created_at', { ascending: false })
+    if (error || !data) {
+      return (await fetchReservationsAsync()).map(r => ({ ...r, client: null, event: null }))
+    }
+    return data.map((row: any) => {
+      const base = fromSnakeCaseReservation(row)
+      return {
+        ...base,
+        client: row.clients ? {
+          id: String(row.clients.id),
+          name: row.clients.name,
+          email: row.clients.email,
+          phone: row.clients.phone,
+        } : null,
+        event: row.events ? {
+          id: String(row.events.id),
+          name: row.events.name,
+          date: row.events.date,
+          place: row.events.place,
+          description: row.events.description,
+        } : null,
+      } as ReservationJoined
+    })
+  } catch {
+    return (await fetchReservationsAsync()).map(r => ({ ...r, client: null, event: null }))
   }
 }
 

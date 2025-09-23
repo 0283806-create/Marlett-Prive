@@ -3,6 +3,51 @@
 Una aplicación web **innovadora y visualmente atractiva** para gestionar reservas de eventos de manera eficiente, construida con Next.js, TypeScript y Tailwind CSS.
 
 ## 🚀 Características
+- Cliente minimalista con listado/detalle y reserva + descarga PDF
+- Panel Admin con tabla, filtros, exportación CSV/XLSX y descarga de PDF
+- Componentes reutilizables: `DownloadPDF`, `ExportData`, `ReservationsTable`
+## 📦 Esquema de Base de Datos (Supabase)
+
+Tablas sugeridas:
+- `clientes` (id UUID PK, nombre, email, telefono, created_at, updated_at)
+- `eventos` (id UUID PK, nombre, fecha, lugar, descripcion, created_at, updated_at)
+- `reservas` (id UUID PK, cliente_id FK -> clientes.id, evento_id FK -> eventos.id, estado, invitados, total, created_at, updated_at)
+
+Consulta recomendada para joins (pseudo):
+`select reservas.*, clientes(name,email,phone), eventos(nombre,fecha,lugar) from reservas`.
+
+SQL (referencia) para Supabase:
+```sql
+create table if not exists clientes (
+  id uuid primary key default gen_random_uuid(),
+  nombre text not null,
+  correo text not null,
+  telefono text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create table if not exists eventos (
+  id uuid primary key default gen_random_uuid(),
+  nombre text not null,
+  fecha date not null,
+  lugar text not null,
+  descripcion text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create table if not exists reservas (
+  id uuid primary key default gen_random_uuid(),
+  cliente_id uuid references clientes(id) on delete cascade,
+  evento_id uuid references eventos(id) on delete cascade,
+  fecha_reserva timestamptz default now(),
+  estado text check (estado in ('pending','confirmed','cancelled','in-progress','completed')) default 'pending',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+```
+
 
 ### ✅ Funcionalidades Principales
 - [x] **Sistema de precios por hora: $3,000 MX/hora para todos los eventos**
