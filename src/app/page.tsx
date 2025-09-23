@@ -1108,15 +1108,7 @@ export default function MarlettReservations() {
                   <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center shadow-lg">
                     <Sparkles className="w-4 h-4 text-white" />
                   </div>
-                  {/* Nota de capacidades por número de salones (esquina inferior izquierda) */}
-                  <div className="mt-1">
-                    <div className="text-xs text-stone-600 flex items-center gap-2">
-                      <Building2 className="w-3 h-3 text-green-700" />
-                      <span>
-                        Capacidades: 1 Salón Privado (hasta 80), 2 Salones Privados (hasta 200), 3 Salones Privados (hasta 300), 4 Salones Privados (hasta 450)
-                      </span>
-                    </div>
-                  </div>
+                  {/* Nota de capacidades movida a la sección de información de capacidad */}
                 </div>
                 
                 <div>
@@ -2047,21 +2039,11 @@ export default function MarlettReservations() {
                   manteniendo la exclusividad y privacidad requerida.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="font-semibold text-green-700">1 Salón Privado:</p>
-                    <p className="text-green-600">Capacidad máxima: 80 personas</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-green-700">2 Salones Privados:</p>
-                    <p className="text-green-600">Capacidad máxima: 200 personas</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-green-700">3 Salones Privados:</p>
-                    <p className="text-green-600">Capacidad máxima: 300 personas</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-green-700">4 Salones Privados:</p>
-                    <p className="text-green-600">Capacidad máxima: 450 personas</p>
+                  <div className="col-span-1 md:col-span-2">
+                    <p className="font-semibold text-green-700">Información de capacidad</p>
+                    <p className="text-green-600">
+                      1 Salón Privado (hasta 80), 2 Salones Privados (hasta 200), 3 Salones Privados (hasta 300), 4 Salones Privados (hasta 450)
+                    </p>
                   </div>
                 </div>
                 
