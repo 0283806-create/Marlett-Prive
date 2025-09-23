@@ -5,7 +5,7 @@ export default function HomePage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <h1 className="text-2xl font-bold mb-6">Mdorado</h1>
       <Image
-        src="/Dorado.svg"
+        src="/Dorado_page-0001.jpg"
         alt="Mdorado"
         width={500}
         height={400}
