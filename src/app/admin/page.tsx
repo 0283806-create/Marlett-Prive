@@ -159,7 +159,7 @@ export default function AdminPage() {
                     <img 
                       src="/Mdorado.svg" 
                       alt="Dorado Logo" 
-                      className="w-44 h-16"
+                      className="w-40 h-12 object-contain"
                     />
                   </div>
                   <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg">
