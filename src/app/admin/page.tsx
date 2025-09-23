@@ -48,10 +48,13 @@ import { downloadReservationPdf } from '@/lib/utils'
 import DownloadPDF from '@/components/DownloadPDF'
 import ExportData from '@/components/ExportData'
 import ReservationsTable from '@/components/ReservationsTable'
+import AuthGuard from '@/components/AuthGuard'
+import { useAuth } from '@/contexts/AuthContext'
 // Interface Reservation importada desde @/lib/reservations
 
 export default function AdminPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const { user, signOut } = useAuth();
 
   // Cargar reservas desde el sistema compartido
   useEffect(() => {
@@ -146,7 +149,8 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-stone-100">
+    <AuthGuard>
+      <div className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-stone-100">
       {/* Header Admin */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-stone-800 via-stone-700 to-stone-600"></div>
@@ -190,6 +194,16 @@ export default function AdminPage() {
                 >
                   <Eye className="w-5 h-5 mr-2" />
                   Vista Cliente
+                </Button>
+
+                <Button
+                  onClick={async () => {
+                    await signOut();
+                  }}
+                  className="bg-red-500/20 backdrop-blur-xl border border-red-300/30 text-white hover:bg-red-500/30 transition-all duration-300"
+                >
+                  <X className="w-5 h-5 mr-2" />
+                  Cerrar Sesión
                 </Button>
               </div>
             </div>
@@ -767,6 +781,7 @@ export default function AdminPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </AuthGuard>
   );
 }
