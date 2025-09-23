@@ -157,7 +157,7 @@ export default function AdminPage() {
                 <div className="relative group">
                   <div className="w-48 h-20 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-300 border border-white/20">
                     <img 
-                      src="/dorado.svg" 
+                      src="/Dorado.svg" 
                       alt="Dorado Logo" 
                       className="w-44 h-16"
                     />
