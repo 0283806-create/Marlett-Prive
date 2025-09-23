@@ -1093,16 +1093,9 @@ export default function MarlettReservations() {
                 >
                   <div className="w-48 h-20 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-300 border border-white/20">
                     <img
-                      src="/marlett-logo.png"
-                      alt="Marlett Logo"
-                      className="w-44 h-16 text-white filter brightness-0 invert"
-                      onError={(e) => {
-                        const target = e.currentTarget as HTMLImageElement
-                        if (!target.dataset.fallback) {
-                          target.src = '/marlett-logo.svg'
-                          target.dataset.fallback = 'true'
-                        }
-                      }}
+                      src="/dorado.svg"
+                      alt="Dorado Logo"
+                      className="w-44 h-16"
                     />
                   </div>
                   <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center shadow-lg">

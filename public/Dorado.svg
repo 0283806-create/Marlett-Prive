@@ -1,0 +1,14 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <circle cx="30" cy="30" r="25" fill="url(#goldGradient)"/>
+  <path d="M15 20 L20 15 L25 20 L30 15 L35 20 L30 25 L20 25 Z" fill="#8B4513"/>
+  <text x="60" y="25" font-family="serif" font-size="24" font-weight="bold" fill="url(#goldGradient)">DORADO</text>
+  <text x="60" y="45" font-family="sans-serif" font-size="12" fill="#8B4513">Eventos de Lujo</text>
+</svg>
