@@ -928,9 +928,12 @@ export default function MarlettReservations() {
       return;
     }
 
-    if (!isAnonymous && (!formData.name || !formData.email || !formData.phone)) {
-      alert('Por favor completa la información personal o selecciona "Evento Anónimo"');
-      return;
+    // Solo validar información personal si NO es anónimo
+    if (!isAnonymous) {
+      if (!formData.name || !formData.email || !formData.phone) {
+        alert('Por favor completa la información personal o selecciona "Evento Anónimo"');
+        return;
+      }
     }
 
     // Validar contenido inapropiado en campos de texto
@@ -1306,7 +1309,11 @@ export default function MarlettReservations() {
                   </Label>
                   
                   {/* Checkbox de Anonimato */}
-                  <div className="flex items-center space-x-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                  <div className={`flex items-center space-x-3 p-4 border rounded-xl transition-all duration-300 ${
+                    isAnonymous 
+                      ? 'bg-green-50 border-green-200' 
+                      : 'bg-amber-50 border-amber-200'
+                  }`}>
                     <input
                       type="checkbox"
                       id="anonymous"
@@ -1315,9 +1322,17 @@ export default function MarlettReservations() {
                       className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
                     />
                     <Label htmlFor="anonymous" className="text-stone-700 font-semibold cursor-pointer">
-                      Evento Anónimo (no mostrar información personal)
+                      {isAnonymous ? '✓ Evento Anónimo (información privada)' : 'Evento Anónimo (no mostrar información personal)'}
                     </Label>
                   </div>
+                  
+                  {isAnonymous && (
+                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-green-800 text-sm">
+                        <strong>Modo Anónimo:</strong> Tu información personal se mantendrá privada. Solo necesitamos los datos del evento.
+                      </p>
+                    </div>
+                  )}
                   
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-3">
