@@ -375,16 +375,6 @@ export default function AdminPage() {
                   >
                     Hoy
                   </Button>
-                  <Button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setStatusFilter('all');
-                    }}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    Limpiar
-                  </Button>
                 </div>
               </div>
             </div>
