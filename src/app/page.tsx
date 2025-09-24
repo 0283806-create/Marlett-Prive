@@ -1249,6 +1249,13 @@ export default function MarlettReservations() {
                     ))}
                   </div>
                   
+                  {/* Nota sobre precios */}
+                  <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-amber-800 text-sm text-center">
+                      <strong>Nota:</strong> El precio por persona y costo por hora puede aumentar dependiendo la ambientación que se busque para el evento.
+                    </p>
+                  </div>
+                  
                   {/* Evento Personalizado */}
                   <div className="mt-6 p-4 bg-stone-50 rounded-xl border border-stone-200">
                     <Label className="text-lg font-semibold text-stone-800 mb-3 block">
