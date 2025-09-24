@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { resendConfirmationEmail } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { AlertCircle, Lock, Mail, Eye, EyeOff } from 'lucide-react'
+import { AlertCircle, Lock, Mail, Eye, EyeOff, RefreshCw, CheckCircle } from 'lucide-react'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
@@ -14,19 +15,29 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [emailNotConfirmed, setEmailNotConfirmed] = useState(false)
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resendSuccess, setResendSuccess] = useState(false)
   
   const { signIn } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setEmailNotConfirmed(false)
+    setResendSuccess(false)
     setLoading(true)
 
     try {
       const { data, error } = await signIn(email, password)
       
       if (error) {
-        setError(error.message || 'Error al iniciar sesión')
+        if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
+          setEmailNotConfirmed(true)
+          setError('Tu email no ha sido confirmado. Por favor revisa tu bandeja de entrada.')
+        } else {
+          setError(error.message || 'Error al iniciar sesión')
+        }
       } else if (data?.user) {
         // Success - user will be redirected automatically by auth context
         console.log('Login successful')
@@ -35,6 +46,25 @@ export default function LoginForm() {
       setError('Error inesperado al iniciar sesión')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleResendConfirmation = async () => {
+    setResendLoading(true)
+    setResendSuccess(false)
+    
+    try {
+      const { error } = await resendConfirmationEmail(email)
+      if (error) {
+        setError('Error al reenviar el email de confirmación')
+      } else {
+        setResendSuccess(true)
+        setError('')
+      }
+    } catch (err) {
+      setError('Error inesperado al reenviar el email')
+    } finally {
+      setResendLoading(false)
     }
   }
 
@@ -67,6 +97,41 @@ export default function LoginForm() {
                 <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 text-red-400" />
                   <span className="text-red-200 text-sm">{error}</span>
+                </div>
+              )}
+
+              {emailNotConfirmed && (
+                <div className="bg-amber-500/20 border border-amber-500/50 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <AlertCircle className="w-4 h-4 text-amber-400" />
+                    <span className="text-amber-200 text-sm font-medium">Email no confirmado</span>
+                  </div>
+                  <p className="text-amber-200 text-sm mb-3">
+                    Necesitas confirmar tu email antes de poder acceder. Revisa tu bandeja de entrada y spam.
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={handleResendConfirmation}
+                    disabled={resendLoading || resendSuccess}
+                    className="w-full bg-amber-500/20 border border-amber-300/30 text-amber-200 hover:bg-amber-500/30 transition-all duration-300"
+                  >
+                    {resendLoading ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Reenviando...
+                      </>
+                    ) : resendSuccess ? (
+                      <>
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Email reenviado
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Reenviar email de confirmación
+                      </>
+                    )}
+                  </Button>
                 </div>
               )}
 
