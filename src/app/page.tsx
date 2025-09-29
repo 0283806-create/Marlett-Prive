@@ -928,12 +928,10 @@ export default function MarlettReservations() {
       return;
     }
 
-    // Solo validar información personal si NO es anónimo
-    if (!isAnonymous) {
-      if (!formData.name || !formData.email || !formData.phone) {
-        alert('Por favor completa la información personal o selecciona "Evento Anónimo"');
-        return;
-      }
+    // Siempre validar información personal (necesaria para contacto)
+    if (!formData.name || !formData.email || !formData.phone) {
+      alert('Por favor completa la información personal para poder contactarte sobre el evento');
+      return;
     }
 
     // Validar contenido inapropiado en campos de texto
@@ -963,12 +961,14 @@ export default function MarlettReservations() {
       id: `${Date.now()}`,
       ownerId: currentUserId,
       isAnonymous,
+      // Para mostrar en la web (público)
       name: isAnonymous ? 'Evento Anónimo' : formData.name,
       email: isAnonymous ? 'anonimo@marlett.com' : formData.email,
       phone: isAnonymous ? 'Privado' : formData.phone,
-      realName: isAnonymous ? formData.name : undefined,
-      realEmail: isAnonymous ? formData.email : undefined,
-      realPhone: isAnonymous ? formData.phone : undefined,
+      // Información real para contacto (privada)
+      realName: formData.name,
+      realEmail: formData.email,
+      realPhone: formData.phone,
       date: selectedDate.split('-').reverse().join('/'),
       time: formData.time,
       duration: duration,
@@ -1322,14 +1322,14 @@ export default function MarlettReservations() {
                       className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500"
                     />
                     <Label htmlFor="anonymous" className="text-stone-700 font-semibold cursor-pointer">
-                      {isAnonymous ? '✓ Evento Anónimo (información privada)' : 'Evento Anónimo (no mostrar información personal)'}
+                      {isAnonymous ? '✓ Evento Anónimo (información privada en la web)' : 'Evento Anónimo (ocultar información personal en la web)'}
                     </Label>
                   </div>
                   
                   {isAnonymous && (
                     <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                       <p className="text-green-800 text-sm">
-                        <strong>Modo Anónimo:</strong> Tu información personal se mantendrá privada. Solo necesitamos los datos del evento.
+                        <strong>Modo Anónimo:</strong> Tu información personal se mantendrá privada en la web, pero necesitamos tus datos para contactarte sobre el evento.
                       </p>
                     </div>
                   )}
@@ -1337,7 +1337,8 @@ export default function MarlettReservations() {
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <Label htmlFor="name" className="text-stone-700 font-semibold">
-                        Nombre completo {!isAnonymous && <span className="text-red-500">*</span>}
+                        Nombre completo <span className="text-red-500">*</span>
+                        {isAnonymous && <span className="text-green-600 text-sm ml-2">(privado)</span>}
                       </Label>
                       <Input
                         id="name"
@@ -1346,40 +1347,42 @@ export default function MarlettReservations() {
                           const value = sanitizeText(e.target.value);
                           setFormData(prev => ({...prev, name: value}));
                         }}
-                        disabled={isAnonymous}
-                        placeholder={isAnonymous ? "Se mostrará como 'Evento Anónimo'" : "Ingresa tu nombre"}
-                        className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all duration-300 disabled:bg-gray-100"
+                        placeholder={isAnonymous ? "Tu nombre (se mantendrá privado)" : "Ingresa tu nombre"}
+                        className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all duration-300"
                         maxLength={50}
+                        required
                       />
                     </div>
                     
                     <div className="space-y-3">
                       <Label htmlFor="email" className="text-stone-700 font-semibold">
-                        Email {!isAnonymous && <span className="text-red-500">*</span>}
+                        Email <span className="text-red-500">*</span>
+                        {isAnonymous && <span className="text-green-600 text-sm ml-2">(privado)</span>}
                       </Label>
                       <Input
                         id="email"
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))}
-                        disabled={isAnonymous}
-                        placeholder={isAnonymous ? "Privado" : "tu@email.com"}
-                        className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all duration-300 disabled:bg-gray-100"
+                        placeholder={isAnonymous ? "Tu email (se mantendrá privado)" : "tu@email.com"}
+                        className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all duration-300"
+                        required
                       />
                     </div>
                   </div>
                   
                   <div className="space-y-3">
                     <Label htmlFor="phone" className="text-stone-700 font-semibold">
-                      Teléfono {!isAnonymous && <span className="text-red-500">*</span>}
+                      Teléfono <span className="text-red-500">*</span>
+                      {isAnonymous && <span className="text-green-600 text-sm ml-2">(privado)</span>}
                     </Label>
                     <Input
                       id="phone"
                       value={formData.phone}
                       onChange={(e) => setFormData(prev => ({...prev, phone: e.target.value}))}
-                      disabled={isAnonymous}
-                      placeholder={isAnonymous ? "Privado" : "+34 612 345 678"}
-                      className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all duration-300 disabled:bg-gray-100"
+                      placeholder={isAnonymous ? "Tu teléfono (se mantendrá privado)" : "+34 612 345 678"}
+                      className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all duration-300"
+                      required
                     />
                   </div>
                 </div>
