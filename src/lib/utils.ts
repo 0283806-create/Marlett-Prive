@@ -72,6 +72,17 @@ export function formatPersonName(raw: string): string {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ')
 }
+
+// Live sanitizer for person name inputs: keep trailing space while typing
+export function sanitizePersonNameLive(raw: string): string {
+  if (!raw) return ''
+  return raw
+    // Allow only letters (incl. accents), spaces, hyphen, apostrophe, period
+    .replace(/[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s\-'.]/g, '')
+    // Collapse 3+ spaces to one, but do NOT trim ends to preserve trailing space while typing
+    .replace(/\s{2,}/g, ' ')
+    .slice(0, 50)
+}
 import { jsPDF } from 'jspdf'
 import type { Reservation } from './reservations'
 import { getPricingConfig } from './reservations'

@@ -19,6 +19,7 @@ import {
   sanitizeText, 
   getInappropriateContentMessage 
 } from '@/lib/profanity-filter';
+import { sanitizePersonNameLive } from '@/lib/utils'
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -1344,7 +1345,7 @@ export default function MarlettReservations() {
                         id="name"
                         value={formData.name}
                         onChange={(e) => {
-                          const value = sanitizeText(e.target.value);
+                          const value = sanitizePersonNameLive(e.target.value);
                           setFormData(prev => ({...prev, name: value}));
                         }}
                         onBlur={(e) => {
