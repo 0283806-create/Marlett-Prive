@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { getStatusColor, getStatusText } from '@/lib/reservations'
 import DownloadPDF from '@/components/DownloadPDF'
+import DownloadAdminPDF from '@/components/DownloadAdminPDF'
 
 type Props = {
   reservations: Reservation[]
@@ -51,6 +52,7 @@ export default function ReservationsTable({ reservations }: Props) {
               <td className="p-3">
                 <div className="flex gap-2">
                   <DownloadPDF event={r} label="PDF" />
+                  <DownloadAdminPDF event={r} label="PDF Admin" />
                 </div>
               </td>
             </tr>

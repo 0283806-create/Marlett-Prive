@@ -1347,6 +1347,13 @@ export default function MarlettReservations() {
                           const value = sanitizeText(e.target.value);
                           setFormData(prev => ({...prev, name: value}));
                         }}
+                        onBlur={(e) => {
+                          try {
+                            const { formatPersonName } = require('@/lib/utils')
+                            const formatted = formatPersonName(e.target.value)
+                            setFormData(prev => ({ ...prev, name: formatted }))
+                          } catch {}
+                        }}
                         placeholder={isAnonymous ? "Tu nombre (se mantendrá privado)" : "Ingresa tu nombre"}
                         className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all duration-300"
                         maxLength={50}
@@ -1363,8 +1370,10 @@ export default function MarlettReservations() {
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))}
+                        onBlur={(e) => setFormData(prev => ({ ...prev, email: e.target.value.trim() }))}
                         placeholder={isAnonymous ? "Tu email (se mantendrá privado)" : "tu@email.com"}
                         className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all duration-300"
+                        required
                       />
                     </div>
                   </div>
@@ -1378,8 +1387,10 @@ export default function MarlettReservations() {
                       id="phone"
                       value={formData.phone}
                       onChange={(e) => setFormData(prev => ({...prev, phone: e.target.value}))}
+                      onBlur={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\s+/g, ' ').trim() }))}
                       placeholder={isAnonymous ? "Tu teléfono (se mantendrá privado)" : "+34 612 345 678"}
                       className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all duration-300"
+                      required
                     />
                   </div>
                 </div>
