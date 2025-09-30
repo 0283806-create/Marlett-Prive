@@ -1343,10 +1343,27 @@ export default function MarlettReservations() {
                       </Label>
                       <Input
                         id="name"
+                        autoComplete="name"
+                        inputMode="text"
                         value={formData.name}
                         onChange={(e) => {
                           const value = sanitizePersonNameLive(e.target.value);
                           setFormData(prev => ({...prev, name: value}));
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === ' ' || e.code === 'Space' || (e as any).key === 'Spacebar') {
+                            const input = e.currentTarget as HTMLInputElement
+                            const start = input.selectionStart ?? input.value.length
+                            const end = input.selectionEnd ?? input.value.length
+                            const next = input.value.slice(0, start) + ' ' + input.value.slice(end)
+                            setFormData(prev => ({ ...prev, name: sanitizePersonNameLive(next) }))
+                            e.preventDefault()
+                            e.stopPropagation()
+                            // Restore caret after the inserted space
+                            requestAnimationFrame(() => {
+                              try { input.setSelectionRange(start + 1, start + 1) } catch {}
+                            })
+                          }
                         }}
                         onBlur={(e) => {
                           try {
