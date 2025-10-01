@@ -275,24 +275,49 @@ export default function MarlettReservations() {
       description: 'Área de bienvenida con escaleras elegantes y diseño moderno'
     },
     {
-      url: '/marlett-images/salon-eventos-1.jpg', 
-      title: 'Salón de Eventos Premium',
-      description: 'Espacio sofisticado con arcos arquitectónicos y mesas redondas'
+      url: '/Copia de PHOTO-2025-07-09-20-40-28.jpg',
+      title: 'Interior Marlett',
+      description: 'Vista interior del restaurante con iluminación elegante'
     },
     {
-      url: '/salon-images/salon-eventos.svg',
-      title: 'Salón de Eventos', 
-      description: 'Espacio flexible con mesas redondas y configuración premium'
+      url: '/Copia de PHOTO-2025-07-14-16-08-57 2.jpg',
+      title: 'Salón Principal',
+      description: 'Espacio principal con mesas y decoración sofisticada'
     },
     {
-      url: '/salon-images/salon-conferencias.svg',
-      title: 'Salón de Conferencias',
-      description: 'Configuración tipo auditorio con tecnología audiovisual'
+      url: '/Copia de PHOTO-2025-07-14-16-08-57 3.jpg',
+      title: 'Área de Comedor',
+      description: 'Comedor principal con diseño contemporáneo'
     },
     {
-      url: '/salon-images/salon-ejecutivo.svg',
-      title: 'Salón Ejecutivo',
-      description: 'Salón con vista panorámica y diseño moderno'
+      url: '/Copia de PHOTO-2025-07-14-16-08-57 4.jpg',
+      title: 'Vista Interior',
+      description: 'Perspectiva interior del restaurante'
+    },
+    {
+      url: '/Copia de PHOTO-2025-07-14-16-08-57 5.jpg',
+      title: 'Ambiente Elegante',
+      description: 'Espacio con iluminación y decoración premium'
+    },
+    {
+      url: '/Copia de PHOTO-2025-07-14-16-09-46 2.jpg',
+      title: 'Salón de Eventos',
+      description: 'Espacio para eventos con configuración flexible'
+    },
+    {
+      url: '/Copia de PHOTO-2025-07-14-16-09-46 4.jpg',
+      title: 'Área de Reuniones',
+      description: 'Espacio íntimo para reuniones privadas'
+    },
+    {
+      url: '/Copia de PHOTO-2025-07-14-16-09-46.jpg',
+      title: 'Vista Panorámica',
+      description: 'Vista completa del espacio interior'
+    },
+    {
+      url: '/Dorado_page-0001.jpg',
+      title: 'Documento Dorado',
+      description: 'Información sobre servicios y eventos'
     },
     {
       url: '/salon-images/vista-aerea.svg',
