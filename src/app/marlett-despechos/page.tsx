@@ -87,12 +87,12 @@ interface EventType {
 export default function MarlettDespechosPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [pricingConfig, setPricingConfig] = useState<PricingConfig>({
-    basePrice: 0,
+    salones: 0,
     hourlyRate: 0,
     catering: 0,
     decoracion: 0,
     audioVisual: 0,
-    specialSetup: 0
+    setup: 0
   });
 
   useEffect(() => {
@@ -227,11 +227,11 @@ export default function MarlettDespechosPage() {
   const calculatePrice = (eventType: EventType, guests: number, rooms: string[], duration: number) => {
     const basePrice = eventType.basePricePerPerson * guests;
     const hourlyCost = eventType.hourlyRate * duration;
-    const roomCost = rooms.length * 100; // $100 por sala
+    const roomCost = rooms.length * pricingConfig.salones;
     const cateringCost = pricingConfig.catering * guests;
     const decorationCost = pricingConfig.decoracion * guests;
     const audioVisualCost = pricingConfig.audioVisual * guests;
-    const specialSetupCost = eventType.requiresSpecialSetup ? pricingConfig.specialSetup : 0;
+    const specialSetupCost = eventType.requiresSpecialSetup ? pricingConfig.setup : 0;
 
     const totalPrice = basePrice + hourlyCost + roomCost + cateringCost + decorationCost + audioVisualCost + specialSetupCost;
 
