@@ -306,6 +306,7 @@ export default function MarlettDespechosPage() {
       decorationSelection: selectedEvent.decorationOptions,
       audioVisualSelection: selectedEvent.audioVisualOptions,
       notes: notes.filter(note => note.trim() !== ''),
+      avatar: '/images/default-avatar.svg',
       realName: formData.name,
       createdAt: new Date().toLocaleString('es-ES'),
       isAnonymous: isAnonymous
