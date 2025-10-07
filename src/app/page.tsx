@@ -14,6 +14,11 @@ import {
   type PricingConfig 
 } from '@/lib/reservations';
 import { 
+  getEventTypesConfig, 
+  getCapacityConfig,
+  type EventTypeConfig 
+} from '@/lib/system-config';
+import { 
   containsInappropriateContent, 
   isValidEventType, 
   sanitizeText, 
@@ -791,110 +796,36 @@ export default function MarlettReservations() {
     }
   ];
 
-  const [eventTypes, setEventTypes] = useState<EventType[]>([
-    {
-      id: 'boda',
-      name: 'Boda y Celebración',
-      icon: <Heart className="w-8 h-8" />,
-      description: 'Celebra el amor con estilo',
-      basePricePerPerson: 45,
-      hourlyRate: pricingConfig.hourlyRate,
-      minCapacity: 20,
-      maxCapacity: 450,
-      minHours: 4,
-      maxHours: 12,
-      requiresSpecialSetup: true,
-      specialRequirements: ['Arco nupcial', 'Mesa de novios', 'Pista de baile'],
-      cateringOptions: ['Menú completo', 'Cóctel de bienvenida', 'Pastel de bodas', 'Bar completo'],
-      decorationOptions: ['Flores naturales', 'Candelabros', 'Mantelería premium', 'Centros de mesa'],
-      audioVisualOptions: ['Sistema de audio profesional', 'Iluminación ambiental', 'Proyector para presentación', 'DJ o banda en vivo']
-    },
-    {
-      id: 'corporativo',
-      name: 'Evento Corporativo',
-      icon: <Target className="w-8 h-8" />,
-      description: 'Profesionalismo y elegancia',
-      basePricePerPerson: 35,
-      hourlyRate: pricingConfig.hourlyRate,
-      minCapacity: 10,
-      maxCapacity: 450,
-      minHours: 2,
-      maxHours: 8,
-      requiresSpecialSetup: false,
-      specialRequirements: ['Pódium', 'Sistema de presentación'],
-      cateringOptions: ['Coffee break', 'Almuerzo ejecutivo', 'Refrigerios', 'Bebidas'],
-      decorationOptions: ['Branding corporativo', 'Banderas', 'Mantelería ejecutiva'],
-      audioVisualOptions: ['Proyector HD', 'Sistema de audio', 'Micrófonos inalámbricos', 'Pizarra digital']
-    },
-    {
-      id: 'gala',
-      name: 'Cena de Gala',
-      icon: <Crown className="w-8 h-8" />,
-      description: 'Experiencia gastronómica premium',
-      basePricePerPerson: 60,
-      hourlyRate: pricingConfig.hourlyRate,
-      minCapacity: 30,
-      maxCapacity: 450,
-      minHours: 3,
-      maxHours: 8,
-      requiresSpecialSetup: true,
-      specialRequirements: ['Mesa principal', 'Iluminación especial'],
-      cateringOptions: ['Menú gourmet', 'Vinos selectos', 'Servicio de mesa', 'Chef personal'],
-      decorationOptions: ['Flores premium', 'Cristalería fina', 'Mantelería de lujo', 'Centros de mesa elegantes'],
-      audioVisualOptions: ['Música ambiental', 'Iluminación dramática', 'Sistema de audio discreto']
-    },
-    {
-      id: 'privado',
-      name: 'Evento Privado',
-      icon: <Star className="w-8 h-8" />,
-      description: 'Intimidad y exclusividad',
-      basePricePerPerson: 40,
-      hourlyRate: pricingConfig.hourlyRate,
-      minCapacity: 10,
-      maxCapacity: 450,
-      minHours: 2,
-      maxHours: 10,
-      requiresSpecialSetup: false,
-      specialRequirements: ['Configuración personalizada'],
-      cateringOptions: ['Menú personalizado', 'Bebidas seleccionadas', 'Servicio discreto'],
-      decorationOptions: ['Decoración personalizada', 'Ambiente íntimo'],
-      audioVisualOptions: ['Música personalizada', 'Iluminación suave']
-    },
-    {
-      id: 'cumpleanos',
-      name: 'Cumpleaños',
-      icon: <Gift className="w-8 h-8" />,
-      description: 'Celebración única y memorable',
-      basePricePerPerson: 30,
-      hourlyRate: pricingConfig.hourlyRate,
-      minCapacity: 15,
-      maxCapacity: 450,
-      minHours: 3,
-      maxHours: 8,
-      requiresSpecialSetup: true,
-      specialRequirements: ['Mesa de pastel', 'Decoración temática'],
-      cateringOptions: ['Pastel personalizado', 'Refrigerios', 'Bebidas', 'Snacks'],
-      decorationOptions: ['Decoración temática', 'Globos', 'Banderas', 'Centros de mesa'],
-      audioVisualOptions: ['Música animada', 'Iluminación festiva', 'Proyector para fotos']
-    },
-    {
-      id: 'aniversario',
-      name: 'Aniversario',
-      icon: <StarOutline className="w-8 h-8" />,
-      description: 'Renueva tus promesas',
-      basePricePerPerson: 35,
-      hourlyRate: pricingConfig.hourlyRate,
-      minCapacity: 20,
-      maxCapacity: 450,
-      minHours: 3,
-      maxHours: 8,
-      requiresSpecialSetup: true,
-      specialRequirements: ['Mesa romántica', 'Decoración especial'],
-      cateringOptions: ['Menú romántico', 'Vino espumante', 'Pastel especial'],
-      decorationOptions: ['Flores románticas', 'Velas', 'Mantelería elegante'],
-      audioVisualOptions: ['Música romántica', 'Iluminación suave', 'Proyector para fotos']
-    }
-  ]);
+  const [eventTypes, setEventTypes] = useState<EventType[]>([]);
+  const [capacityConfig, setCapacityConfig] = useState(getCapacityConfig());
+
+  // Cargar configuración dinámica de eventos
+  useEffect(() => {
+    const loadEventTypes = () => {
+      const config = getEventTypesConfig();
+      const iconMap: Record<string, React.ReactNode> = {
+        Heart: <Heart className="w-8 h-8" />,
+        Target: <Target className="w-8 h-8" />,
+        Crown: <Crown className="w-8 h-8" />,
+        Star: <Star className="w-8 h-8" />,
+        Gift: <Gift className="w-8 h-8" />,
+        Users: <Users className="w-8 h-8" />,
+        Music: <Music className="w-8 h-8" />,
+        Sparkles: <Sparkles className="w-8 h-8" />,
+      };
+
+      const mappedEvents = config.map(eventConfig => ({
+        ...eventConfig,
+        icon: iconMap[eventConfig.icon] || <Star className="w-8 h-8" />,
+        hourlyRate: pricingConfig.hourlyRate
+      }));
+      
+      setEventTypes(mappedEvents);
+    };
+
+    loadEventTypes();
+    setCapacityConfig(getCapacityConfig());
+  }, [pricingConfig.hourlyRate]);
 
   // Las reservas se cargan desde el sistema compartido
 
@@ -979,6 +910,23 @@ export default function MarlettReservations() {
 
     const guests = parseInt(formData.guests);
     const duration = parseInt(formData.duration);
+    
+    // Validar capacidad del evento
+    if (guests < selectedEvent.minCapacity || guests > selectedEvent.maxCapacity) {
+      alert(`El número de invitados debe estar entre ${selectedEvent.minCapacity} y ${selectedEvent.maxCapacity}.`);
+      return;
+    }
+
+    // Validar límites globales de capacidad
+    if (guests > capacityConfig.maxGuestsPerEvent) {
+      alert(`El número de invitados excede el límite máximo permitido de ${capacityConfig.maxGuestsPerEvent} personas por evento.`);
+      return;
+    }
+
+    if (duration < selectedEvent.minHours || duration > selectedEvent.maxHours) {
+      alert(`La duración debe estar entre ${selectedEvent.minHours} y ${selectedEvent.maxHours} horas.`);
+      return;
+    }
     
     const pricing = calculatePrice(selectedEvent, guests, ['room1'], duration);
     const currentUserId = typeof window !== 'undefined' ? (localStorage.getItem('marlett-user-id') || (() => { const v = crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`; localStorage.setItem('marlett-user-id', v); return v; })()) : undefined;

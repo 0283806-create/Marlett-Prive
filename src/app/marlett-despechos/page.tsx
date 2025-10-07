@@ -14,6 +14,11 @@ import {
   type PricingConfig 
 } from '@/lib/reservations';
 import { 
+  getDespechosEventsConfig, 
+  getCapacityConfig,
+  type DespechosEventConfig 
+} from '@/lib/system-config';
+import { 
   containsInappropriateContent, 
   isValidEventType, 
   sanitizeText, 
@@ -127,76 +132,37 @@ export default function MarlettDespechosPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   // Eventos específicos para Marlett de Despechos
-  const despechosEventTypes: EventType[] = [
-    {
-      id: 'despecho-visita-corta',
-      name: 'Visita Corta - Desahogo Rápido',
-      icon: <Users className="w-8 h-8" />,
-      description: 'Perfecto para una o dos bebidas y cantar un par de canciones',
-      basePricePerPerson: 0, // Solo cover
-      hourlyRate: 0, // No cobro por hora en visitas cortas
-      minCapacity: 1,
-      maxCapacity: 8,
-      minHours: 0.5, // 30 minutos
-      maxHours: 1, // 1 hora
-      requiresSpecialSetup: false,
-      specialRequirements: ['Mesa básica', 'Acceso a karaoke'],
-      cateringOptions: ['Cover de entrada', 'Bebidas por separado', 'Snacks básicos'],
-      decorationOptions: ['Ambiente de despecho', 'Música temática'],
-      audioVisualOptions: ['Karaoke', 'Música de fondo', 'Iluminación básica']
-    },
-    {
-      id: 'despecho-promedio',
-      name: 'Visita Promedio - Noche Estándar',
-      icon: <Music className="w-8 h-8" />,
-      description: 'Experiencia completa de despecho con tiempo para disfrutar',
-      basePricePerPerson: 0, // Solo cover
-      hourlyRate: 0, // No cobro por hora en visitas promedio
-      minCapacity: 2,
-      maxCapacity: 12,
-      minHours: 1.5, // 1 hora y media
-      maxHours: 2.5, // 2 horas y media
-      requiresSpecialSetup: false,
-      specialRequirements: ['Mesa reservada', 'Karaoke ilimitado'],
-      cateringOptions: ['Cover de entrada', 'Bebidas incluidas (limitadas)', 'Botanas'],
-      decorationOptions: ['Ambiente temático', 'Accesorios de despecho'],
-      audioVisualOptions: ['Karaoke profesional', 'Música personalizada', 'Iluminación ambiental']
-    },
-    {
-      id: 'despecho-visita-larga',
-      name: 'Visita Larga - Noche Completa',
-      icon: <Crown className="w-8 h-8" />,
-      description: 'Noche completa de despecho con karaoke, música en vivo y grupos de amigos',
-      basePricePerPerson: 0, // Solo cover
-      hourlyRate: 0, // No cobro por hora en visitas largas
-      minCapacity: 4,
-      maxCapacity: 15,
-      minHours: 3,
-      maxHours: 4,
-      requiresSpecialSetup: true,
-      specialRequirements: ['Mesa VIP', 'Karaoke privado', 'Área reservada'],
-      cateringOptions: ['Cover premium', 'Bebidas incluidas (generosas)', 'Botanas premium'],
-      decorationOptions: ['Decoración completa', 'Ambiente VIP', 'Accesorios especiales'],
-      audioVisualOptions: ['Karaoke profesional', 'Música en vivo', 'Iluminación especial', 'Efectos de sonido']
-    },
-    {
-      id: 'despecho-evento-especial',
-      name: 'Evento Especial - Show de Despecho',
-      icon: <Sparkles className="w-8 h-8" />,
-      description: 'Aniversarios, rupturas recientes, shows especiales - La experiencia definitiva',
-      basePricePerPerson: 0, // Solo cover
-      hourlyRate: 0, // No cobro por hora en eventos especiales
-      minCapacity: 6,
-      maxCapacity: 20,
-      minHours: 4,
-      maxHours: 6,
-      requiresSpecialSetup: true,
-      specialRequirements: ['Salón privado', 'Show personalizado', 'Staff dedicado'],
-      cateringOptions: ['Cover VIP', 'Barra libre', 'Menú especial de despecho'],
-      decorationOptions: ['Decoración temática completa', 'Ambiente de show', 'Accesorios premium'],
-      audioVisualOptions: ['Sistema profesional', 'Show en vivo', 'Efectos especiales', 'Iluminación de espectáculo']
-    }
-  ];
+  const [despechosEventTypes, setDespechosEventTypes] = useState<EventType[]>([]);
+  const [capacityConfig, setCapacityConfig] = useState(getCapacityConfig());
+
+  // Cargar configuración dinámica de eventos de despechos
+  useEffect(() => {
+    const loadDespechosEventTypes = () => {
+      const config = getDespechosEventsConfig();
+      const iconMap: Record<string, React.ReactNode> = {
+        Heart: <Heart className="w-8 h-8" />,
+        Target: <Target className="w-8 h-8" />,
+        Crown: <Crown className="w-8 h-8" />,
+        Star: <Star className="w-8 h-8" />,
+        Gift: <Gift className="w-8 h-8" />,
+        Users: <Users className="w-8 h-8" />,
+        Music: <Music className="w-8 h-8" />,
+        Sparkles: <Sparkles className="w-8 h-8" />,
+      };
+
+      const mappedEvents = config.map(eventConfig => ({
+        ...eventConfig,
+        icon: iconMap[eventConfig.icon] || <Users className="w-8 h-8" />,
+        basePricePerPerson: 0, // Solo cover
+        hourlyRate: 0 // No cobro por hora
+      }));
+      
+      setDespechosEventTypes(mappedEvents);
+    };
+
+    loadDespechosEventTypes();
+    setCapacityConfig(getCapacityConfig());
+  }, []);
 
   // Imágenes específicas para despechos
   const despechosImages = [
@@ -327,10 +293,17 @@ export default function MarlettDespechosPage() {
     }
 
     const guests = parseInt(formData.guests);
-    const duration = parseInt(formData.duration);
+    const duration = parseFloat(formData.duration);
     
+    // Validar capacidad del evento
     if (guests < selectedEvent.minCapacity || guests > selectedEvent.maxCapacity) {
       alert(`El número de invitados debe estar entre ${selectedEvent.minCapacity} y ${selectedEvent.maxCapacity}.`);
+      return;
+    }
+
+    // Validar límites globales de capacidad
+    if (guests > capacityConfig.maxGuestsPerEvent) {
+      alert(`El número de invitados excede el límite máximo permitido de ${capacityConfig.maxGuestsPerEvent} personas por evento.`);
       return;
     }
 
