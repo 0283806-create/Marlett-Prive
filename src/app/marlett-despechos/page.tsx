@@ -129,38 +129,72 @@ export default function MarlettDespechosPage() {
   // Eventos específicos para Marlett de Despechos
   const despechosEventTypes: EventType[] = [
     {
-      id: 'marlett-despechos-basico',
-      name: 'Marlett de Despechos - Básico',
+      id: 'despecho-visita-corta',
+      name: 'Visita Corta - Desahogo Rápido',
       icon: <Users className="w-8 h-8" />,
-      description: 'Despedida de soltero/a con estilo',
-      basePricePerPerson: 25,
-      hourlyRate: pricingConfig.hourlyRate,
-      minCapacity: 10,
-      maxCapacity: 80,
-      minHours: 2,
-      maxHours: 6,
+      description: 'Perfecto para una o dos bebidas y cantar un par de canciones',
+      basePricePerPerson: 0, // Solo cover
+      hourlyRate: 0, // No cobro por hora en visitas cortas
+      minCapacity: 1,
+      maxCapacity: 8,
+      minHours: 0.5, // 30 minutos
+      maxHours: 1, // 1 hora
       requiresSpecialSetup: false,
-      specialRequirements: ['Área de juegos', 'Música especial'],
-      cateringOptions: ['Botanas', 'Bebidas básicas', 'Snacks', 'Refrigerios'],
-      decorationOptions: ['Decoración temática', 'Globos', 'Banderas', 'Accesorios festivos'],
-      audioVisualOptions: ['Música animada', 'Sistema de audio', 'Iluminación festiva']
+      specialRequirements: ['Mesa básica', 'Acceso a karaoke'],
+      cateringOptions: ['Cover de entrada', 'Bebidas por separado', 'Snacks básicos'],
+      decorationOptions: ['Ambiente de despecho', 'Música temática'],
+      audioVisualOptions: ['Karaoke', 'Música de fondo', 'Iluminación básica']
     },
     {
-      id: 'marlett-despechos-premium',
-      name: 'Marlett de Despechos - Premium',
+      id: 'despecho-promedio',
+      name: 'Visita Promedio - Noche Estándar',
+      icon: <Music className="w-8 h-8" />,
+      description: 'Experiencia completa de despecho con tiempo para disfrutar',
+      basePricePerPerson: 0, // Solo cover
+      hourlyRate: 0, // No cobro por hora en visitas promedio
+      minCapacity: 2,
+      maxCapacity: 12,
+      minHours: 1.5, // 1 hora y media
+      maxHours: 2.5, // 2 horas y media
+      requiresSpecialSetup: false,
+      specialRequirements: ['Mesa reservada', 'Karaoke ilimitado'],
+      cateringOptions: ['Cover de entrada', 'Bebidas incluidas (limitadas)', 'Botanas'],
+      decorationOptions: ['Ambiente temático', 'Accesorios de despecho'],
+      audioVisualOptions: ['Karaoke profesional', 'Música personalizada', 'Iluminación ambiental']
+    },
+    {
+      id: 'despecho-visita-larga',
+      name: 'Visita Larga - Noche Completa',
       icon: <Crown className="w-8 h-8" />,
-      description: 'Despedida de soltero/a de lujo',
-      basePricePerPerson: 45,
-      hourlyRate: pricingConfig.hourlyRate,
-      minCapacity: 15,
-      maxCapacity: 80,
+      description: 'Noche completa de despecho con karaoke, música en vivo y grupos de amigos',
+      basePricePerPerson: 0, // Solo cover
+      hourlyRate: 0, // No cobro por hora en visitas largas
+      minCapacity: 4,
+      maxCapacity: 15,
       minHours: 3,
-      maxHours: 8,
+      maxHours: 4,
       requiresSpecialSetup: true,
-      specialRequirements: ['Pista de baile', 'Bar premium', 'Área VIP'],
-      cateringOptions: ['Menú completo', 'Barra libre premium', 'Cócteles especiales', 'Botanas gourmet'],
-      decorationOptions: ['Decoración premium', 'Iluminación especial', 'Mantelería de lujo', 'Centros de mesa'],
-      audioVisualOptions: ['Sistema de audio profesional', 'DJ en vivo', 'Iluminación de fiesta', 'Efectos especiales']
+      specialRequirements: ['Mesa VIP', 'Karaoke privado', 'Área reservada'],
+      cateringOptions: ['Cover premium', 'Bebidas incluidas (generosas)', 'Botanas premium'],
+      decorationOptions: ['Decoración completa', 'Ambiente VIP', 'Accesorios especiales'],
+      audioVisualOptions: ['Karaoke profesional', 'Música en vivo', 'Iluminación especial', 'Efectos de sonido']
+    },
+    {
+      id: 'despecho-evento-especial',
+      name: 'Evento Especial - Show de Despecho',
+      icon: <Sparkles className="w-8 h-8" />,
+      description: 'Aniversarios, rupturas recientes, shows especiales - La experiencia definitiva',
+      basePricePerPerson: 0, // Solo cover
+      hourlyRate: 0, // No cobro por hora en eventos especiales
+      minCapacity: 6,
+      maxCapacity: 20,
+      minHours: 4,
+      maxHours: 6,
+      requiresSpecialSetup: true,
+      specialRequirements: ['Salón privado', 'Show personalizado', 'Staff dedicado'],
+      cateringOptions: ['Cover VIP', 'Barra libre', 'Menú especial de despecho'],
+      decorationOptions: ['Decoración temática completa', 'Ambiente de show', 'Accesorios premium'],
+      audioVisualOptions: ['Sistema profesional', 'Show en vivo', 'Efectos especiales', 'Iluminación de espectáculo']
     }
   ];
 
@@ -225,26 +259,45 @@ export default function MarlettDespechosPage() {
   }, [showGallery, despechosImages.length]);
 
   const calculatePrice = (eventType: EventType, guests: number, rooms: string[], duration: number) => {
-    const basePrice = eventType.basePricePerPerson * guests;
-    const hourlyCost = eventType.hourlyRate * duration;
-    const roomCost = rooms.length * pricingConfig.salones;
-    const cateringCost = pricingConfig.catering * guests;
-    const decorationCost = pricingConfig.decoracion * guests;
-    const audioVisualCost = pricingConfig.audioVisual * guests;
-    const specialSetupCost = eventType.requiresSpecialSetup ? pricingConfig.setup : 0;
+    // Sistema de cover para despechos
+    const coverPerPerson = getCoverPrice(eventType.id);
+    const totalCover = coverPerPerson * guests;
+    
+    // Costos adicionales según el tipo de evento
+    let additionalCosts = 0;
+    if (eventType.id === 'despecho-evento-especial') {
+      additionalCosts = 500; // Costo adicional por show personalizado
+    } else if (eventType.id === 'despecho-visita-larga') {
+      additionalCosts = 200; // Costo adicional por área VIP
+    }
 
-    const totalPrice = basePrice + hourlyCost + roomCost + cateringCost + decorationCost + audioVisualCost + specialSetupCost;
+    const totalPrice = totalCover + additionalCosts;
 
     return {
-      basePrice,
-      hourlyRate: hourlyCost,
-      roomCost,
-      cateringCost,
-      decorationCost,
-      audioVisualCost,
-      specialSetupCost,
+      basePrice: totalCover,
+      hourlyRate: 0, // No se cobra por hora
+      roomCost: 0, // Incluido en el cover
+      cateringCost: 0, // Incluido en el cover según el tipo
+      decorationCost: 0, // Incluido en el cover
+      audioVisualCost: 0, // Incluido en el cover
+      specialSetupCost: additionalCosts,
       totalPrice
     };
+  };
+
+  const getCoverPrice = (eventTypeId: string): number => {
+    switch (eventTypeId) {
+      case 'despecho-visita-corta':
+        return 150; // $150 MXN por persona
+      case 'despecho-promedio':
+        return 250; // $250 MXN por persona
+      case 'despecho-visita-larga':
+        return 400; // $400 MXN por persona
+      case 'despecho-evento-especial':
+        return 600; // $600 MXN por persona
+      default:
+        return 200;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -431,8 +484,8 @@ export default function MarlettDespechosPage() {
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-2xl font-bold">${eventType.basePricePerPerson}</div>
-                                <div className="text-sm text-white/80">por persona</div>
+                                <div className="text-2xl font-bold">${getCoverPrice(eventType.id).toLocaleString()}</div>
+                                <div className="text-sm text-white/80">cover por persona</div>
                               </div>
                             </div>
                             
@@ -566,7 +619,7 @@ export default function MarlettDespechosPage() {
                   <div className="space-y-6">
                     <Label className="text-xl font-bold text-stone-800 mb-6 block flex items-center gap-3">
                       <Calendar className="w-6 h-6 text-purple-700" />
-                      Fecha y Hora de la Despedida
+                      Fecha y Hora de tu Despecho
                     </Label>
                     
                     <div className="grid grid-cols-2 gap-6">
@@ -589,28 +642,53 @@ export default function MarlettDespechosPage() {
                         <Label htmlFor="time-despechos" className="text-stone-700 font-semibold">
                           Hora de Inicio <span className="text-red-500">*</span>
                         </Label>
-                        <Input
+                        <select
                           id="time-despechos"
-                          type="time"
                           value={formData.time}
                           onChange={(e) => setFormData(prev => ({...prev, time: e.target.value}))}
-                          className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-300"
+                          className="h-12 w-full bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-300 px-3"
                           required
-                        />
+                        >
+                          <option value="">Selecciona hora</option>
+                          <option value="19:00">7:00 PM</option>
+                          <option value="19:30">7:30 PM</option>
+                          <option value="20:00">8:00 PM</option>
+                          <option value="20:30">8:30 PM</option>
+                          <option value="21:00">9:00 PM</option>
+                          <option value="21:30">9:30 PM</option>
+                          <option value="22:00">10:00 PM</option>
+                          <option value="22:30">10:30 PM</option>
+                          <option value="23:00">11:00 PM</option>
+                          <option value="23:30">11:30 PM</option>
+                          <option value="00:00">12:00 AM</option>
+                        </select>
                       </div>
+                    </div>
+                    
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Clock className="w-5 h-5 text-purple-600" />
+                        <span className="font-semibold text-purple-800">Horarios Disponibles</span>
+                      </div>
+                      <p className="text-sm text-purple-700">
+                        El salón de despechos está disponible de <strong>7:00 PM a 12:00 AM</strong>. 
+                        Las reservas pueden extenderse hasta la 1:00 AM para eventos especiales.
+                      </p>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-6">
                       <div className="space-y-3">
                         <Label htmlFor="guests-despechos" className="text-stone-700 font-semibold">
-                          Número de Invitados <span className="text-red-500">*</span>
+                          Número de Personas <span className="text-red-500">*</span>
                         </Label>
                         <Input
                           id="guests-despechos"
                           type="number"
                           value={formData.guests}
                           onChange={(e) => setFormData(prev => ({...prev, guests: e.target.value}))}
-                          placeholder="15"
+                          placeholder="4"
+                          min="1"
+                          max="20"
                           className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-300"
                           required
                         />
@@ -618,17 +696,47 @@ export default function MarlettDespechosPage() {
                       
                       <div className="space-y-3">
                         <Label htmlFor="duration-despechos" className="text-stone-700 font-semibold">
-                          Duración (horas) <span className="text-red-500">*</span>
+                          Duración Estimada <span className="text-red-500">*</span>
                         </Label>
-                        <Input
+                        <select
                           id="duration-despechos"
-                          type="number"
                           value={formData.duration}
                           onChange={(e) => setFormData(prev => ({...prev, duration: e.target.value}))}
-                          placeholder="4"
-                          className="h-12 bg-stone-50 border-stone-200 rounded-xl focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-300"
+                          className="h-12 w-full bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all duration-300 px-3"
                           required
-                        />
+                        >
+                          <option value="">Selecciona duración</option>
+                          <option value="0.5">30 minutos - Desahogo rápido</option>
+                          <option value="1">1 hora - Visita corta</option>
+                          <option value="1.5">1.5 horas - Promedio</option>
+                          <option value="2">2 horas - Promedio</option>
+                          <option value="2.5">2.5 horas - Promedio</option>
+                          <option value="3">3 horas - Noche completa</option>
+                          <option value="4">4 horas - Noche completa</option>
+                          <option value="5">5 horas - Evento especial</option>
+                          <option value="6">6 horas - Evento especial</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Zap className="w-5 h-5 text-pink-600" />
+                        <span className="font-semibold text-pink-800">Tipos de Visita</span>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-pink-700">
+                        <div>
+                          <strong>🍹 Visitas cortas (30-60 min):</strong> Una o dos bebidas y cantar un par de canciones
+                        </div>
+                        <div>
+                          <strong>🎤 Visitas largas (3-4 horas):</strong> Karaoke, música en vivo, grupos de amigos
+                        </div>
+                        <div>
+                          <strong>📅 Eventos especiales (4-6 horas):</strong> Aniversarios, rupturas recientes, shows
+                        </div>
+                        <div>
+                          <strong>⏰ Promedio general:</strong> Entre 1.5 y 2.5 horas
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -638,42 +746,47 @@ export default function MarlettDespechosPage() {
                     <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
                       <h4 className="font-semibold text-purple-800 mb-4 flex items-center gap-2">
                         <Calculator className="w-5 h-5" />
-                        Estimación de Precio
+                        Cálculo del Cover
                       </h4>
                       {(() => {
                         const selectedEvent = despechosEventTypes.find(e => e.id === selectedEventType);
                         if (!selectedEvent) return null;
                         
                         const guests = parseInt(formData.guests);
-                        const duration = parseInt(formData.duration);
+                        const duration = parseFloat(formData.duration);
                         const pricing = calculatePrice(selectedEvent, guests, selectedRooms, duration);
+                        const coverPerPerson = getCoverPrice(selectedEvent.id);
                         
                         return (
                           <div className="space-y-3">
                             <div className="flex justify-between items-center">
-                              <span className="text-purple-700">Base ({guests} personas):</span>
-                              <span className="font-semibold">${pricing.basePrice.toLocaleString()}</span>
+                              <span className="text-purple-700">Cover por persona:</span>
+                              <span className="font-semibold">${coverPerPerson.toLocaleString()} MXN</span>
                             </div>
                             <div className="flex justify-between items-center">
-                              <span className="text-purple-700">Duración ({duration} horas):</span>
-                              <span className="font-semibold">${pricing.hourlyRate.toLocaleString()}</span>
+                              <span className="text-purple-700">Número de personas:</span>
+                              <span className="font-semibold">{guests}</span>
                             </div>
                             <div className="flex justify-between items-center">
-                              <span className="text-purple-700">Catering:</span>
-                              <span className="font-semibold">${pricing.cateringCost.toLocaleString()}</span>
+                              <span className="text-purple-700">Subtotal cover:</span>
+                              <span className="font-semibold">${pricing.basePrice.toLocaleString()} MXN</span>
                             </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-purple-700">Decoración:</span>
-                              <span className="font-semibold">${pricing.decorationCost.toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-purple-700">Audio/Visual:</span>
-                              <span className="font-semibold">${pricing.audioVisualCost.toLocaleString()}</span>
-                            </div>
+                            {pricing.specialSetupCost > 0 && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-purple-700">Servicios especiales:</span>
+                                <span className="font-semibold">${pricing.specialSetupCost.toLocaleString()} MXN</span>
+                              </div>
+                            )}
                             <hr className="border-purple-300" />
                             <div className="flex justify-between items-center text-lg">
-                              <span className="font-bold text-purple-800">Total Estimado:</span>
-                              <span className="font-bold text-purple-800">${pricing.totalPrice.toLocaleString()}</span>
+                              <span className="font-bold text-purple-800">Total a Pagar:</span>
+                              <span className="font-bold text-purple-800">${pricing.totalPrice.toLocaleString()} MXN</span>
+                            </div>
+                            <div className="bg-purple-100 rounded-lg p-3 mt-4">
+                              <p className="text-sm text-purple-800">
+                                <strong>¿Qué incluye el cover?</strong><br />
+                                {selectedEvent.cateringOptions.join(', ')}
+                              </p>
                             </div>
                           </div>
                         );
