@@ -14,8 +14,9 @@ import {
   type PricingConfig 
 } from '@/lib/reservations';
 import { 
-  getDespechosEventsConfig, 
+  getDespechosEventsConfig,
   getCapacityConfig,
+  getIndividualCapacityConfig,
   type DespechosEventConfig 
 } from '@/lib/system-config';
 import { 
@@ -134,6 +135,7 @@ export default function MarlettDespechosPage() {
   // Eventos específicos para Marlett de Despechos
   const [despechosEventTypes, setDespechosEventTypes] = useState<EventType[]>([]);
   const [capacityConfig, setCapacityConfig] = useState(getCapacityConfig());
+  const [individualCapacityConfig, setIndividualCapacityConfig] = useState(getIndividualCapacityConfig());
 
   // Cargar configuración dinámica de eventos de despechos
   useEffect(() => {
@@ -162,6 +164,7 @@ export default function MarlettDespechosPage() {
 
     loadDespechosEventTypes();
     setCapacityConfig(getCapacityConfig());
+    setIndividualCapacityConfig(getIndividualCapacityConfig());
   }, []);
 
   // Imágenes específicas para despechos
@@ -302,8 +305,9 @@ export default function MarlettDespechosPage() {
     }
 
     // Validar límites globales de capacidad
-    if (guests > capacityConfig.maxGuestsPerEvent) {
-      alert(`El número de invitados excede el límite máximo permitido de ${capacityConfig.maxGuestsPerEvent} personas por evento.`);
+    const maxGuestsForDespechos = individualCapacityConfig.despechosEvents.maxGuestsPerEvent;
+    if (guests > maxGuestsForDespechos) {
+      alert(`El número de invitados excede el límite máximo permitido para Marlett de Despechos de ${maxGuestsForDespechos} personas por evento.`);
       return;
     }
 

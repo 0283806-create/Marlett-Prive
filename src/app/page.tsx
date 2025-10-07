@@ -16,6 +16,7 @@ import {
 import { 
   getEventTypesConfig, 
   getCapacityConfig,
+  getIndividualCapacityConfig,
   type EventTypeConfig 
 } from '@/lib/system-config';
 import { 
@@ -798,6 +799,7 @@ export default function MarlettReservations() {
 
   const [eventTypes, setEventTypes] = useState<EventType[]>([]);
   const [capacityConfig, setCapacityConfig] = useState(getCapacityConfig());
+  const [individualCapacityConfig, setIndividualCapacityConfig] = useState(getIndividualCapacityConfig());
 
   // Cargar configuración dinámica de eventos
   useEffect(() => {
@@ -825,6 +827,7 @@ export default function MarlettReservations() {
 
     loadEventTypes();
     setCapacityConfig(getCapacityConfig());
+    setIndividualCapacityConfig(getIndividualCapacityConfig());
   }, [pricingConfig.hourlyRate]);
 
   // Las reservas se cargan desde el sistema compartido
@@ -918,8 +921,9 @@ export default function MarlettReservations() {
     }
 
     // Validar límites globales de capacidad
-    if (guests > capacityConfig.maxGuestsPerEvent) {
-      alert(`El número de invitados excede el límite máximo permitido de ${capacityConfig.maxGuestsPerEvent} personas por evento.`);
+    const maxGuestsForEventType = individualCapacityConfig.regularEvents.maxGuestsPerEvent;
+    if (guests > maxGuestsForEventType) {
+      alert(`El número de invitados excede el límite máximo permitido para eventos regulares de ${maxGuestsForEventType} personas por evento.`);
       return;
     }
 

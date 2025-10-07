@@ -12,6 +12,7 @@ import {
   type DespechosEventConfig,
   type CapacityConfig
 } from '@/lib/system-config';
+import CapacityConfigForm from '@/components/CapacityConfigForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -61,6 +62,7 @@ export default function AdminEventsPage() {
   const [editingEvent, setEditingEvent] = useState<EventTypeConfig | DespechosEventConfig | null>(null);
   const [isNewEvent, setIsNewEvent] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [showCapacityConfig, setShowCapacityConfig] = useState(false);
 
   useEffect(() => {
     setEventTypes(getEventTypesConfig());
@@ -403,7 +405,16 @@ export default function AdminEventsPage() {
         {/* Configuración de Capacidad */}
         {activeTab === 'capacity' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-stone-800">Límites de Capacidad</h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-stone-800">Límites de Capacidad</h2>
+              <Button
+                onClick={() => setShowCapacityConfig(true)}
+                className="flex items-center gap-2"
+              >
+                <Settings className="w-4 h-4" />
+                Configurar Límites Específicos
+              </Button>
+            </div>
             
             <Card>
               <CardHeader>
@@ -412,7 +423,7 @@ export default function AdminEventsPage() {
                   Configuración Global de Capacidad
                 </CardTitle>
                 <CardDescription>
-                  Establece los límites máximos para eventos y reservas
+                  Establece los límites máximos generales para eventos y reservas
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -484,6 +495,17 @@ export default function AdminEventsPage() {
                   <Label htmlFor="allowOverbooking" className="text-sm">
                     Permitir sobreventa (reservas que excedan la capacidad)
                   </Label>
+                </div>
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertCircle className="w-4 h-4 text-blue-600" />
+                    <span className="font-semibold text-blue-800">Configuración Específica</span>
+                  </div>
+                  <p className="text-sm text-blue-700">
+                    Para configurar límites específicos por tipo de evento (Eventos Regulares vs Marlett de Despechos), 
+                    usa el botón "Configurar Límites Específicos" arriba.
+                  </p>
                 </div>
                 
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -566,6 +588,17 @@ export default function AdminEventsPage() {
                 >
                   Eliminar
                 </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de Configuración de Capacidad Específica */}
+        {showCapacityConfig && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <CapacityConfigForm onClose={() => setShowCapacityConfig(false)} />
               </div>
             </div>
           </div>

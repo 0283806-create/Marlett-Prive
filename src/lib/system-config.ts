@@ -8,6 +8,23 @@ export interface CapacityConfig {
   overbookingLimit: number;
 }
 
+export interface IndividualCapacityConfig {
+  regularEvents: {
+    maxGuestsPerEvent: number;
+    maxEventsPerDay: number;
+    maxGuestsPerHour: number;
+    allowOverbooking: boolean;
+    overbookingLimit: number;
+  };
+  despechosEvents: {
+    maxGuestsPerEvent: number;
+    maxEventsPerDay: number;
+    maxGuestsPerHour: number;
+    allowOverbooking: boolean;
+    overbookingLimit: number;
+  };
+}
+
 export interface EventTypeConfig {
   id: string;
   name: string;
@@ -55,6 +72,24 @@ export const defaultCapacityConfig: CapacityConfig = {
   maxGuestsPerHour: 150,
   allowOverbooking: false,
   overbookingLimit: 50
+};
+
+// Configuración por defecto de capacidad individual
+export const defaultIndividualCapacityConfig: IndividualCapacityConfig = {
+  regularEvents: {
+    maxGuestsPerEvent: 450,
+    maxEventsPerDay: 3,
+    maxGuestsPerHour: 150,
+    allowOverbooking: false,
+    overbookingLimit: 50
+  },
+  despechosEvents: {
+    maxGuestsPerEvent: 20,
+    maxEventsPerDay: 5,
+    maxGuestsPerHour: 60,
+    allowOverbooking: false,
+    overbookingLimit: 10
+  }
 };
 
 // Configuración por defecto de eventos regulares
@@ -316,4 +351,26 @@ export const updateDespechosEventsConfig = (events: DespechosEventConfig[]): voi
   if (typeof window === 'undefined') return;
   
   localStorage.setItem('marlett-despechos-events-config', JSON.stringify(events));
+};
+
+export const getIndividualCapacityConfig = (): IndividualCapacityConfig => {
+  if (typeof window === 'undefined') return defaultIndividualCapacityConfig;
+  
+  const stored = localStorage.getItem('marlett-individual-capacity-config');
+  if (stored) {
+    try {
+      return { ...defaultIndividualCapacityConfig, ...JSON.parse(stored) };
+    } catch {
+      return defaultIndividualCapacityConfig;
+    }
+  }
+  return defaultIndividualCapacityConfig;
+};
+
+export const updateIndividualCapacityConfig = (config: Partial<IndividualCapacityConfig>): void => {
+  if (typeof window === 'undefined') return;
+  
+  const current = getIndividualCapacityConfig();
+  const updated = { ...current, ...config };
+  localStorage.setItem('marlett-individual-capacity-config', JSON.stringify(updated));
 };
