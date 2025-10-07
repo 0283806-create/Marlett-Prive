@@ -523,7 +523,7 @@ export default function AdminEventsPage() {
         )}
 
         {/* Modal de Edición */}
-        {(editingEvent || isNewEvent) && (
+        {(editingEvent || isNewEvent) && (activeTab === 'regular' || activeTab === 'despechos') && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center p-6 border-b">
@@ -622,15 +622,24 @@ function EventForm({
   onSave: (data: any) => void;
   onCancel: () => void;
 }) {
+  const arrayToString = (arr: string[]): string => {
+    return arr.join('\n');
+  };
+
+  const parseArrayFromString = (str: string): string[] => {
+    if (!str) return [];
+    return str.split('\n').filter(item => item.trim() !== '');
+  };
+
   const [formData, setFormData] = useState({
     name: event?.name || '',
     description: event?.description || '',
     isActive: event?.isActive ?? true,
     maxCapacity: event?.maxCapacity || 50,
     minCapacity: event?.minCapacity || 10,
-    basePrice: event?.basePrice || (eventType === 'despechos' ? 0 : 30),
+    basePrice: (event as EventTypeConfig)?.basePrice || (eventType === 'despechos' ? 0 : 30),
     coverPrice: (event as DespechosEventConfig)?.coverPrice || 200,
-    hourlyRate: event?.hourlyRate || 2000,
+    hourlyRate: (event as EventTypeConfig)?.hourlyRate || 2000,
     minHours: event?.minHours || 2,
     maxHours: event?.maxHours || 6,
     requiresSpecialSetup: event?.requiresSpecialSetup ?? false,
@@ -640,7 +649,7 @@ function EventForm({
     audioVisualOptions: arrayToString(event?.audioVisualOptions || []),
     icon: event?.icon || 'Star',
     color: event?.color || '#3b82f6',
-    additionalCosts: (event as DespechosEventConfig)?.additionalCosts || 0
+    additionalCosts: eventType === 'despechos' ? ((event as DespechosEventConfig)?.additionalCosts || 0) : 0
   });
 
   const handleSubmit = (e: React.FormEvent) => {

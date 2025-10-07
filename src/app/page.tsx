@@ -47,8 +47,9 @@ import {
   Users,
   DollarSign,
   FileText,
-  Phone,
+  Music,
   Sparkles,
+  Phone,
   Zap,
   TrendingUp,
   Award,
@@ -819,7 +820,8 @@ export default function MarlettReservations() {
       const mappedEvents = config.map(eventConfig => ({
         ...eventConfig,
         icon: iconMap[eventConfig.icon] || <Star className="w-8 h-8" />,
-        hourlyRate: pricingConfig.hourlyRate
+        hourlyRate: pricingConfig.hourlyRate,
+        basePricePerPerson: eventConfig.basePrice
       }));
       
       setEventTypes(mappedEvents);
