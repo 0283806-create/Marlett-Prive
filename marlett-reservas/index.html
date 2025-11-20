@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reservaciones | Marlett</title>
+  <meta name="description" content="Reservaciones para eventos en Marlett — Altos de Jalisco: Restaurante & Salón de eventos." />
+  <meta name="theme-color" content="#0f1512" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%20viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%23131a17'/%3E%3Ctext x='50' y='58' font-size='56' text-anchor='middle' font-family='Georgia,serif' fill='%23b8e8c8'%3EM%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="theme-altos">        <!-- tu diseño actual -->
+<!-- <body class="theme-marfil">  diseño claro -->
+<!-- <body class="theme-dorado">  oscuro dorado -->
+<!-- <body class="theme-terracota"> cálido terracota -->
+
+  <!-- Theme switcher -->
+  <div id="themePicker" style="position:fixed;top:12px;right:12px;z-index:99;
+    display:flex;gap:6px;backdrop-filter:blur(6px);padding:6px 8px;border-radius:12px;
+    border:1px solid var(--border);background:color-mix(in oklab, var(--panel) 75%, transparent)">
+    <button data-theme="theme-altos" class="tbtn">Altos</button>
+    <button data-theme="theme-marfil" class="tbtn">Marfil</button>
+    <button data-theme="theme-dorado" class="tbtn">Dorado</button>
+    <button data-theme="theme-terracota" class="tbtn">Terracota</button>
+  </div>
+
+  <!-- Barra Superior Fija -->
+  <header class="navbar">
+    <div class="navbar-inner">
+      <img src="assets/Marlett_high_contrast.jpg" alt="Marlett Logo" class="navbar-logo">
+      <div class="navbar-text navbar-title">
+        <h1>Marlett</h1>
+        <p>Agenda tu evento — Restaurante & Salón de eventos</p>
+      </div>
+      <div class="navbar-actions top-actions">
+        <a href="#resForm" class="navbar-cta">Reservar mi fecha</a>
+        <button type="button" class="navbar-cta-ghost" id="navbarWapp">
+          <img src="/assets/Whatappmarlett.png" alt="WhatsApp" class="whatsapp-icon">
+          WhatsApp Marlett
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="wrap" aria-label="Portada Marlett">
+    <div class="hero">
+      <img class="hero-media" src="assets/Copia de PHOTO-2025-07-09-20-40-28.jpeg" alt="Fachada principal de Marlett Restaurante" width="1365" height="768" loading="eager" />
+      <div class="hero-overlay">
+        <div class="copy">
+          <span class="kicker">Eventos especiales</span>
+          <h1>Marlett — Altos de Jalisco</h1>
+          <p class="tagline">Restaurante & Salón de eventos • Zapotlanejo / Guadalajara</p>
+          <p class="hero-intro">En Marlett, los momentos no se planean: se viven a fuego lento.</p>
+          <p class="hero-paragraph">
+            Es tu casa para celebrar tus logros, compartir con quienes más importan y ser el escenario donde nacen ideas que dejan huella.
+            Luz cuidada, diseño moderno y detalles pensados para invitarte a quedarte.
+          </p>
+          <p class="hero-mantra">"La conexión multiplica la alegría como el conocimiento multiplica la sabiduría."</p>
+          <p class="hero-cta-line">Agenda tu experiencia y deja que la inspiración te encuentre aquí.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="page-content contenedor-principal">
+  <div class="borde-hojas borde-hojas-dark"></div>
+
+  <!-- AMBIENTES CAROUSEL -->
+  <section class="marlett-divider" aria-label="Frase de transición">
+    <h2 class="golden-text scroll-animate">EAT. SHARE. ENJOY.</h2>
+  </section>
+
+  <section class="wrap" aria-label="Ambientes Marlett">
+    <div class="card pad ambientes-card">
+      <section class="ambientes" aria-labelledby="ambientes-title">
+        <div class="ambientes-header" id="ambientes-title">
+          <h2>Conoce nuestros ambientes</h2>
+          <p>Lobby, accesibilidad, sala de eventos y montaje.</p>
+        </div>
+
+        <div class="ambientes-carousel">
+          <button class="amb-btn prev" aria-label="Anterior">‹</button>
+
+          <div class="ambientes-track">
+            <article class="ambiente-item" data-id="lobby">
+              <img src="/assets/IMG_7432.jpg" alt="Lobby" loading="lazy">
+              <div class="ambiente-caption">
+                <h3>Lobby</h3>
+                <p>Acceso elegante con iluminación cálida.</p>
+              </div>
+            </article>
+            <article class="ambiente-item" data-id="accesibilidad">
+              <img src="/assets/IMG_7429.jpg" alt="Accesibilidad" loading="lazy">
+              <div class="ambiente-caption">
+                <h3>Accesibilidad</h3>
+                <p>Rampas y circulación cómoda para todos.</p>
+              </div>
+            </article>
+            <article class="ambiente-item" data-id="lounge">
+              <img src="/assets/IMG_7431.jpg" alt="Lounge &amp; Bar" loading="lazy">
+              <div class="ambiente-caption">
+                <h3>Lounge &amp; Bar</h3>
+                <p>Para convivios, cocteles y afters.</p>
+              </div>
+            </article>
+            <article class="ambiente-item" data-id="auditorio">
+              <img src="/assets/IMG_7436.jpg" alt="Auditorio" loading="lazy">
+              <div class="ambiente-caption">
+                <h3>Auditorio</h3>
+                <p>Montaje tipo conferencia.</p>
+              </div>
+            </article>
+            <article class="ambiente-item" data-id="detalles">
+              <img src="/assets/IMG_7434.jpg" alt="Detalles" loading="lazy">
+              <div class="ambiente-caption">
+                <h3>Detalles</h3>
+                <p>Acabados contemporáneos.</p>
+              </div>
+            </article>
+            <article class="ambiente-item" data-id="salon">
+              <img src="/assets/IMG_7436.jpg" alt="Sala Marlett" loading="lazy">
+              <div class="ambiente-caption">
+                <h3>Sala Marlett</h3>
+                <p>El lugar para tus celebraciones.</p>
+              </div>
+            </article>
+          </div>
+
+          <button class="amb-btn next" aria-label="Siguiente">›</button>
+        </div>
+
+        <div class="ambientes-dots" role="tablist" aria-label="Selecciona un ambiente">
+          <button data-slide="0" class="active" type="button"></button>
+          <button data-slide="1" type="button"></button>
+          <button data-slide="2" type="button"></button>
+          <button data-slide="3" type="button"></button>
+          <button data-slide="4" type="button"></button>
+          <button data-slide="5" type="button"></button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- FORM + AREAS -->
+  <section class="wrap grid grid-2" aria-label="Reservación">
+    <div class="card pad reservation-card">
+      <div class="marlett-panel">
+        <div class="marlett-badge">
+          <img src="/assets/Marlett_high_contrast.jpg" alt="Marlett — Reserva tu evento" class="marlett-badge-img" loading="lazy" decoding="async">
+        </div>
+        <div class="panel-body">
+          <div class="header">
+            <div>
+              <strong>Reserva tu evento</strong><br>
+              <small>Responderemos rápido por WhatsApp o correo.</small>
+            </div>
+          </div>
+
+          <div class="form-top">
+            <p class="eyebrow">Coordinación personal</p>
+            <h2>Agenda tu evento en Marlett</h2>
+            <p class="sub">Te contactamos por WhatsApp para confirmar disponibilidad.</p>
+          </div>
+
+          <form id="resForm" class="form-grid" novalidate data-whatsapp="+52 33 1900 6852">
+            <p class="section-title">Información de contacto</p>
+            <div class="row-span-2 section soft-panel" aria-label="Información de contacto">
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="name">Nombre completo <span class="req">*</span></label>
+                  <input class="fld" id="name" name="name" type="text" placeholder="Juan Pérez" autocomplete="name" required minlength="2" />
+                </div>
+                <div class="form-field">
+                  <label for="phone">Teléfono (WhatsApp) <span class="req">*</span></label>
+                  <input class="fld" id="phone" name="phone" type="tel" inputmode="tel" placeholder="+52 33 1234 5678" autocomplete="tel" required />
+                  <div class="hint">WhatsApp o celular de contacto.</div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="email">Correo (opcional)</label>
+                  <input class="fld" id="email" name="email" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" />
+                </div>
+                <div class="form-field">
+                  <label for="venueArea">Área preferida</label>
+                  <input class="fld" id="venueArea" name="venue_area" list="areas" placeholder="Selecciona o escribe…">
+                  <datalist id="areas">
+                    <option>Sala Marlett</option>
+                  </datalist>
+                </div>
+              </div>
+            </div>
+
+            <p class="section-title">Datos del evento</p>
+            <div>
+              <label for="date">Fecha del evento <span class="req">*</span></label>
+              <input class="fld" id="date" name="date" type="date" required />
+            </div>
+            <div>
+              <label for="time">Hora de inicio <span class="req">*</span></label>
+              <input class="fld" id="time" name="time" type="time" required />
+            </div>
+            <div>
+              <label for="guests">Cantidad de invitados <span class="req">*</span></label>
+              <input class="fld" id="guests" name="guests" type="number" min="1" max="1000" placeholder="Ej. 120" required />
+            </div>
+            <div>
+              <label for="eventType">Tipo de evento <span class="req">*</span></label>
+              <input class="fld" id="eventType" name="event_type" list="eventTypes" placeholder="Selecciona o escribe…" required />
+              <datalist id="eventTypes">
+                <option>Boda</option><option>XV / Quinceañera</option><option>Cumpleaños</option>
+                <option>Corporativo</option><option>Graduación</option><option>Baby Shower</option>
+                <option>Pedida / Compromiso</option><option>Otro</option>
+              </datalist>
+            </div>
+
+            <p class="section-title">Servicios adicionales</p>
+            <div class="row-span-2 form-group services-section">
+              <label class="form-label">¿Planean usar visuales (pantallas, proyector) o audio? <span class="req">*</span></label>
+              <div class="choice-group" data-choice="visuales" role="group" aria-label="Requerimiento A/V">
+                <button type="button" class="choice-btn" data-value="Sí">Sí</button>
+                <button type="button" class="choice-btn" data-value="No">No</button>
+                <button type="button" class="choice-btn" data-value="No estoy seguro">No estoy seguro</button>
+              </div>
+              <input type="hidden" name="needs_av" value="">
+              <div id="avDetailsWrap" style="display:none; margin-top:12px">
+                <div class="hint" style="margin-bottom:8px">Selecciona lo que podría necesitar tu evento:</div>
+                <div class="chip-group">
+                  <label class="chip"><input type="checkbox" name="av_items" value="Proyector">Proyector</label>
+                  <label class="chip"><input type="checkbox" name="av_items" value="Pantalla">Pantalla</label>
+                  <label class="chip"><input type="checkbox" name="av_items" value="Micrófonos">Micrófonos</label>
+                  <label class="chip"><input type="checkbox" name="av_items" value="Bocinas">Bocinas</label>
+                  <label class="chip"><input type="checkbox" name="av_items" value="Iluminación">Iluminación</label>
+                  <label class="chip"><input type="checkbox" name="av_items" value="Muro LED">Muro LED</label>
+                </div>
+                <label for="avNotes" style="margin-top:12px">Detalles A/V</label>
+                <textarea class="fld" id="avNotes" name="av_notes" rows="3" placeholder="Ej. 2 micrófonos inalámbricos, HDMI, pantalla cerca del escenario…"></textarea>
+              </div>
+            </div>
+
+            <div class="row-span-2 form-group services-section">
+              <label class="form-label">¿Te interesan paquetes de Foto/Video? <span class="req">*</span></label>
+              <div class="choice-group" data-choice="media" role="group" aria-label="Interés en Foto/Video">
+                <button type="button" class="choice-btn" data-value="Sí">Sí</button>
+                <button type="button" class="choice-btn" data-value="No">No</button>
+                <button type="button" class="choice-btn" data-value="Tal vez">Tal vez</button>
+              </div>
+              <input type="hidden" name="media_interest" value="">
+              <div id="mediaDetailsWrap" style="display:none; margin-top:12px">
+                <label for="mediaNotes">Cuéntanos qué buscas</label>
+                <textarea class="fld" id="mediaNotes" name="media_notes" rows="3" placeholder="Ej. highlight reel, cabina de fotos, dron…"></textarea>
+              </div>
+            </div>
+
+            <div class="row-span-2 form-group">
+              <label class="form-label" for="notes">Algo más que debamos saber (opcional)</label>
+              <div class="note-letter">
+                <textarea class="fld note-text" id="notes" name="notes" rows="5" placeholder="Querido equipo Marlett, me gustaría compartir algunos detalles sobre mi evento..."></textarea>
+              </div>
+              <div class="hint" style="margin-top:10px">Usaremos tu información solo para dar seguimiento a tu solicitud.</div>
+              <label class="consent-label">
+                <input type="checkbox" id="consent" required>
+                Acepto ser contactad@ por WhatsApp/llamada para confirmar mi evento <span class="req">*</span>
+              </label>
+            </div>
+
+            <div class="row-span-2 actions">
+              <button type="button" class="btn btn-ghost" id="previewBtn" aria-controls="preview">Vista previa</button>
+              <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+            </div>
+
+            <div id="success" class="row-span-2 success" role="status">
+              ✨ ¡Listo! Recibimos tu solicitud. En cuanto confirmemos disponibilidad te escribimos por WhatsApp desde Marlett.
+            </div>
+
+            <div id="preview" class="row-span-2 section soft-panel" style="display:none"></div>
+            <input type="text" name="_company" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0">
+          </form>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="sidebar-banner form-side-panel" aria-label="Ambiente Marlett">
+      <div class="sidebar-image-wrap">
+        <img src="/assets/ambiente-marlett-vertical.jpg" alt="Ambiente Marlett vertical" class="sidebar-image" loading="lazy" decoding="async">
+      </div>
+    </aside>
+  </section>
+
+  <button class="sticky-cta" id="ctaWapp">
+    <img src="/assets/Whatappmarlett.png" alt="WhatsApp" class="whatsapp-icon">
+    WhatsApp Marlett
+  </button>
+  </main>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const track = document.querySelector('.ambientes-track');
+    const slides = document.querySelectorAll('.ambiente-item');
+    const prevBtn = document.querySelector('.amb-btn.prev');
+    const nextBtn = document.querySelector('.amb-btn.next');
+    const dots = document.querySelectorAll('.ambientes-dots button');
+    const hero = document.querySelector('.hero');
+    const slideTexts = document.querySelectorAll('.scroll-animate');
+
+    if (track && slides.length) {
+      let current = 0;
+      const total = slides.length;
+
+      function goToSlide(index) {
+        if (index < 0) index = total - 1;
+        if (index >= total) index = 0;
+        current = index;
+        const offset = -index * 100;
+        track.style.transform = `translateX(${offset}%)`;
+
+        if (dots && dots.length) {
+          dots.forEach(d => d.classList.remove('active'));
+          if (dots[current]) {
+            dots[current].classList.add('active');
+          }
+        }
+      }
+
+      if (prevBtn) prevBtn.addEventListener('click', () => goToSlide(current - 1));
+      if (nextBtn) nextBtn.addEventListener('click', () => goToSlide(current + 1));
+
+      dots.forEach((dot, idx) => dot.addEventListener('click', () => goToSlide(idx)));
+
+      setInterval(() => {
+        if (nextBtn) {
+          nextBtn.click();
+        } else {
+          goToSlide(current + 1);
+        }
+      }, 6000);
+
+      goToSlide(0);
+    } else {
+      console.warn('No se encontró el carrusel de ambientes');
+    }
+
+    if (hero) {
+      const heroMedia = hero.querySelector('.hero-media');
+      const markHeroReady = () => hero.classList.add('is-ready');
+
+      if (heroMedia) {
+        if (heroMedia.complete) {
+          markHeroReady();
+        } else {
+          heroMedia.addEventListener('load', markHeroReady, { once: true });
+        }
+      } else {
+        markHeroReady();
+      }
+
+      const toggleHeroScroll = () => {
+        hero.classList.toggle('is-scrolled', window.scrollY > 80);
+      };
+
+      toggleHeroScroll();
+      window.addEventListener('scroll', toggleHeroScroll, { passive: true });
+    }
+
+    if (slideTexts.length) {
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.4 });
+
+      slideTexts.forEach(el => observer.observe(el));
+    }
+  });
+  </script>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
