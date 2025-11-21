@@ -1,10 +1,8 @@
 import RandomPhrase from "./RandomPhrase";
-import marlettHero from "../assets/marlett_hero.png";
-import salonImage from "/assets/IMG_7431.jpg";
 
 const heroStyles = `
 .hero-section {
-  padding: clamp(48px, 10vw, 96px) 24px;
+  padding: clamp(12px, 4vw, 32px) 24px clamp(40px, 8vw, 72px);
   display: flex;
   justify-content: center;
 }
@@ -19,11 +17,16 @@ const heroStyles = `
   backdrop-filter: blur(12px);
 }
 
+.hero-card-banner {
+  line-height: 0;
+}
+
 .hero-card-banner img {
   width: 100%;
-  height: clamp(160px, 25vw, 220px);
+  height: clamp(260px, 45vw, 480px);
   object-fit: cover;
   display: block;
+  border-radius: 0 0 28px 28px;
 }
 
 .hero-card-content {
@@ -141,7 +144,7 @@ const heroStyles = `
 
 @media (max-width: 720px) {
   .hero-section {
-    padding: 40px 18px 56px;
+    padding: 16px 18px 40px;
   }
 
   .hero-card {
@@ -161,15 +164,15 @@ export default function Hero() {
       <div className="hero-card">
         <div className="hero-card-banner">
           <img
-            src={marlettHero}
-            alt="Fachada superior de Marlett Restaurante"
+            src="/assets/PHOTO-2025-07-09-20-40-28.jpeg"
+            alt="Fachada frontal de Marlett Restaurante"
             loading="lazy"
           />
         </div>
         <div className="hero-card-content">
           <figure className="hero-card-media">
             <img
-              src={salonImage}
+              src="/assets/IMG_7431.jpg"
               alt="Interior del salón principal de Marlett"
               loading="lazy"
             />

@@ -520,6 +520,7 @@ function App() {
   return (
     <div className="app-shell">
       <SuccessToast visible={showSuccess} onDismiss={() => setShowSuccess(false)} />
+      <Hero />
       <div id="themePicker">
         <button data-theme="theme-altos" className="tbtn">Altos</button>
         <button data-theme="theme-marfil" className="tbtn">Marfil</button>
@@ -543,8 +544,6 @@ function App() {
           </div>
         </div>
       </header>
-
-      <Hero />
 
       <main className="page-content contenedor-principal">
         <div className="borde-hojas borde-hojas-dark"></div>
