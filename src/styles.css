@@ -545,18 +545,21 @@ a:hover { text-decoration: underline; }
 
 /* Subtítulos */
 .form-top .eyebrow {
-  font-size: clamp(0.75rem, 1.2vw, 0.875rem);
+  font-family: "Playfair Display", serif;
+  font-size: clamp(0.95rem, 1.1vw, 1.15rem);
   font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(214, 200, 155, 0.8);
+  text-transform: none;
+  letter-spacing: 0.04em;
+  color: #e2d4aa;
   margin: 0 0 8px 0;
 }
 
 .header strong {
-  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  font-family: "Playfair Display", serif;
+  font-size: clamp(0.95rem, 1.1vw, 1.15rem);
   font-weight: 600;
-  color: rgba(247, 244, 235, 0.95);
+  letter-spacing: 0.04em;
+  color: #e2d4aa;
 }
 
 .form-top .sub {
@@ -574,12 +577,13 @@ a:hover { text-decoration: underline; }
 
 /* Encabezados de sección */
 .section-title {
+  font-family: "Playfair Display", serif;
   grid-column: 1 / -1;
   margin: 40px 0 16px 0;
-  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  font-size: clamp(0.95rem, 1.1vw, 1.15rem);
   font-weight: 600;
-  color: rgba(214, 200, 155, 0.95);
-  letter-spacing: 0.02em;
+  color: #e2d4aa;
+  letter-spacing: 0.04em;
 }
 
 .section-title:first-of-type {
@@ -658,10 +662,11 @@ a:hover { text-decoration: underline; }
 }
 
 .letter-block .form-label {
-  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  font-family: "Playfair Display", serif;
+  font-size: clamp(0.95rem, 1.1vw, 1.15rem);
   font-weight: 600;
-  color: rgba(214, 200, 155, 0.95);
-  letter-spacing: 0.02em;
+  color: #e2d4aa;
+  letter-spacing: 0.04em;
   margin-bottom: 16px;
   display: block;
 }
