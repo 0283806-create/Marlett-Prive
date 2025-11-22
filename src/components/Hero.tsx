@@ -1,5 +1,4 @@
 import RandomPhrase from "./RandomPhrase";
-import marlettHero from "../assets/marlett_hero.png";
 
 const heroStyles = `
 .hero-wrapper {
@@ -131,9 +130,10 @@ export default function Hero() {
       {/* Imagen frontal completa */}
       <div className="hero-banner">
         <img
-          src={marlettHero}
+          src="/assets/PHOTO-2025-07-09-20-40-28.jpeg"
           alt="Fachada de Marlett Restaurante & Salón de eventos"
           loading="lazy"
+          decoding="async"
         />
       </div>
       {/* Tarjeta de contenido sobrepuesta, sin foto a la derecha */}
