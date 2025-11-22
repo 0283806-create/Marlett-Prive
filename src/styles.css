@@ -609,6 +609,41 @@ a:hover { text-decoration: underline; }
 
 .note-text { min-height: 140px; }
 
+.letter-block {
+  margin-top: 28px;
+}
+
+.letter-textarea {
+  width: 100%;
+  min-height: 180px;
+  padding: 20px 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(214, 200, 155, 0.5);
+  background:
+    radial-gradient(circle at top left, rgba(214, 200, 155, 0.07), transparent 55%),
+    rgba(6, 12, 9, 0.96);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  color: #f7f4eb;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.7;
+  resize: vertical;
+  outline: none;
+}
+
+.letter-textarea::placeholder {
+  color: rgba(214, 200, 155, 0.7);
+  white-space: pre-line;
+}
+
+@media (max-width: 720px) {
+  .letter-textarea {
+    min-height: 160px;
+    padding: 16px 18px;
+    border-radius: 20px;
+  }
+}
+
 .consent-label { display: flex; align-items: center; gap: 8px; font-size: 13px; }
 
 .actions {

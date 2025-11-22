@@ -688,9 +688,17 @@ function App() {
                   </div>
 
                   <div className="row-span-2 form-group">
-                    <label className="form-label" htmlFor="notes">Algo más que debamos saber (opcional)</label>
-                    <div className="note-letter">
-                      <textarea className="fld note-text" id="notes" name="notes" rows={5} placeholder="Querido equipo Marlett, me gustaría compartir algunos detalles sobre mi evento..."></textarea>
+                    <div className="letter-block">
+                      <label className="form-label" htmlFor="notes">Algo más que debamos saber (opcional)</label>
+                      <textarea
+                        className="fld note-text letter-textarea"
+                        id="notes"
+                        name="notes"
+                        rows={5}
+                        placeholder="Querido equipo Marlett,
+
+Me gustaría compartir algunos detalles sobre mi evento..."
+                      ></textarea>
                     </div>
                     <div className="hint" style={{ marginTop: '10px' }}>Usaremos tu información solo para dar seguimiento a tu solicitud.</div>
                     <label className="consent-label">
