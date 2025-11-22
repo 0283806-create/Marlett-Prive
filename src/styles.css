@@ -531,20 +531,59 @@ a:hover { text-decoration: underline; }
 .panel-body {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+}
+
+/* Título principal del formulario */
+.form-top h2 {
+  font-size: clamp(1.5rem, 2.5vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #f7f4eb;
+  margin: 0 0 8px 0;
+}
+
+/* Subtítulos */
+.form-top .eyebrow {
+  font-size: clamp(0.75rem, 1.2vw, 0.875rem);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(214, 200, 155, 0.8);
+  margin: 0 0 8px 0;
+}
+
+.header strong {
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  font-weight: 600;
+  color: rgba(247, 244, 235, 0.95);
+}
+
+.form-top .sub {
+  font-size: clamp(0.875rem, 1.2vw, 1rem);
+  color: rgba(241, 244, 239, 0.85);
+  margin: 8px 0 0 0;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  gap: 28px;
+  margin-top: 8px;
 }
 
+/* Encabezados de sección */
 .section-title {
   grid-column: 1 / -1;
-  margin: 0;
+  margin: 40px 0 16px 0;
+  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
   font-weight: 600;
-  color: rgba(214,200,155,0.9);
+  color: rgba(214, 200, 155, 0.95);
+  letter-spacing: 0.02em;
+}
+
+.section-title:first-of-type {
+  margin-top: 32px;
 }
 
 .section.soft-panel {
@@ -552,6 +591,11 @@ a:hover { text-decoration: underline; }
   border: 1px solid rgba(214,200,155,0.12);
   border-radius: 18px;
   padding: 18px;
+  margin-top: 4px;
+}
+
+.services-section {
+  margin-top: 4px;
 }
 
 .form-field {
@@ -610,7 +654,16 @@ a:hover { text-decoration: underline; }
 .note-text { min-height: 140px; }
 
 .letter-block {
-  margin-top: 28px;
+  margin-top: 40px;
+}
+
+.letter-block .form-label {
+  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  font-weight: 600;
+  color: rgba(214, 200, 155, 0.95);
+  letter-spacing: 0.02em;
+  margin-bottom: 16px;
+  display: block;
 }
 
 .letter-textarea {
