@@ -90,25 +90,6 @@ function App() {
     const navbarWapp = document.getElementById('navbarWapp');
     const errorPanel = document.getElementById('formError');
 
-    const refreshChips = () => {
-      document.querySelectorAll<HTMLElement>('.chip').forEach((chip) => {
-        const input = chip.querySelector<HTMLInputElement>('input');
-        if (!input) return;
-        chip.dataset.checked = input.checked ? 'true' : 'false';
-      });
-    };
-
-    const toggleConditional = () => {
-      const fd = form ? new FormData(form) : null;
-      if (!fd) return;
-      const needsAV = fd.get('needs_av') || '';
-      const media = fd.get('media_interest') || '';
-      const avWrap = document.getElementById('avDetailsWrap');
-      const mediaWrap = document.getElementById('mediaDetailsWrap');
-      if (avWrap) avWrap.style.display = needsAV === 'Sí' || needsAV === 'No estoy seguro' ? 'block' : 'none';
-      if (mediaWrap) mediaWrap.style.display = media === 'Sí' || media === 'Tal vez' ? 'block' : 'none';
-    };
-
     const setMinDate = () => {
       const dateInput = document.getElementById('date') as HTMLInputElement | null;
       if (!dateInput) return;
@@ -230,11 +211,6 @@ function App() {
     const showPreview = () => {
       if (!form || !previewEl) return;
       const fd = new FormData(form);
-      const items: string[] = [];
-      fd.forEach((value, key) => {
-        if (key === 'av_items') items.push(value.toString());
-      });
-      const avItems = items.length ? items.join(', ') : '—';
       const esc = (value: string | null) =>
         (value ?? '—')
           .toString()
@@ -252,10 +228,7 @@ function App() {
           <div>Tipo de evento</div><div>${esc(fd.get('event_type')?.toString() ?? '—')}</div>
           <div>Área</div><div>${esc(fd.get('venue_area')?.toString() ?? '—')}</div>
           <div>A/V</div><div>${esc(fd.get('needs_av')?.toString() ?? '—')}</div>
-          <div>Elementos A/V</div><div>${esc(avItems)}</div>
-          <div>Notas A/V</div><div>${esc(fd.get('av_notes')?.toString() ?? '—')}</div>
           <div>Foto/Video</div><div>${esc(fd.get('media_interest')?.toString() ?? '—')}</div>
-          <div>Notas media</div><div>${esc(fd.get('media_notes')?.toString() ?? '—')}</div>
           <div>Notas</div><div>${esc(fd.get('notes')?.toString() ?? '—')}</div>
         </div>`;
       previewEl.style.display = 'block';
@@ -281,16 +254,7 @@ function App() {
       if (venue && venue !== '—') addLine('Área preferida', venue);
       addLine('A/V', mapValue('needs_av'));
 
-      const avItems: string[] = [];
-      fd.forEach((value, key) => {
-        if (key === 'av_items') avItems.push(value.toString());
-      });
-      if (avItems.length) addLine('Elementos A/V', avItems.join(', '));
-      const avNotes = mapValue('av_notes');
-      if (avNotes && avNotes !== '—') addLine('Notas A/V', avNotes);
       addLine('Foto/Video', mapValue('media_interest'));
-      const mediaNotes = mapValue('media_notes');
-      if (mediaNotes && mediaNotes !== '—') addLine('Notas media', mediaNotes);
       const notes = mapValue('notes');
       if (notes && notes !== '—') addLine('Notas adicionales', notes);
 
@@ -327,10 +291,6 @@ function App() {
         return value !== null ? value.toString() : null;
       };
 
-      const avItemsArray = fd
-        .getAll('av_items')
-        .map((value) => value.toString())
-        .filter((value) => value.trim().length > 0);
       const invitadosRaw = parseInt((fd.get('guests') || '0').toString(), 10);
       const invitados = Number.isNaN(invitadosRaw)
         ? 1
@@ -345,10 +305,7 @@ function App() {
         hora_inicio: getValue('time'),
         cantidad_invitados: invitados,
         needs_av: getValue('needs_av'),
-        av_items: avItemsArray.length ? avItemsArray : null,
-        av_notes: getValue('av_notes'),
         media_interest: getValue('media_interest'),
-        media_notes: getValue('media_notes'),
         notes: getValue('notes'),
         status: 'pending'
       };
@@ -392,8 +349,6 @@ function App() {
         openWhatsAppWithText(getWhatsAppNumber(), waText);
 
         form.reset();
-        refreshChips();
-        toggleConditional();
         setErrors({});
       } catch (err) {
         console.error('Error submitting form:', err);
@@ -427,13 +382,8 @@ function App() {
     const handleInput = (event: Event) => {
       const target = event.target as HTMLInputElement;
       if (!target) return;
-      if (target.matches('.chip input')) refreshChips();
       if (target.id === 'phone') {
         target.value = target.value.replace(/[^\d+]/g, '').replace(/\s+/g, '');
-      }
-      if (target.name === 'needs_av' || target.name === 'media_interest') {
-        refreshChips();
-        toggleConditional();
       }
       if (target.classList.contains('fld')) validateField(target);
     };
@@ -464,10 +414,6 @@ function App() {
         const applyValue = (value: string) => {
           hidden.value = value;
           setActive(value);
-
-          if (hidden.name === 'needs_av' || hidden.name === 'media_interest') {
-            toggleConditional();
-          }
         };
 
         if (hidden.value.trim()) {
@@ -503,8 +449,6 @@ function App() {
       addListener(navbarWapp, 'click', ctaHandler);
 
       setMinDate();
-      refreshChips();
-      toggleConditional();
       initChoiceGroups();
     }
 
@@ -720,23 +664,9 @@ function App() {
                     <div className="choice-group" data-choice="visuales" role="group" aria-label="Requerimiento A/V">
                       <button type="button" className="choice-btn" data-value="Sí">Sí</button>
                       <button type="button" className="choice-btn" data-value="No">No</button>
-                      <button type="button" className="choice-btn" data-value="No estoy seguro">No estoy seguro</button>
+                      <button type="button" className="choice-btn" data-value="Tal vez">Tal vez</button>
                     </div>
                     <input type="hidden" name="needs_av" value="" />
-                    <div id="avDetailsWrap" style={{ display: 'none', marginTop: '12px' }}>
-                      <div className="hint" style={{ marginBottom: '8px' }}>Selecciona lo que podría necesitar tu evento:</div>
-                      <div className="chip-group">
-                        <label className="chip"><input type="checkbox" name="av_items" value="Proyector" />Proyector</label>
-                        <label className="chip"><input type="checkbox" name="av_items" value="Pantalla" />Pantalla</label>
-                        <label className="chip"><input type="checkbox" name="av_items" value="Micrófonos" />Micrófonos</label>
-                        <label className="chip"><input type="checkbox" name="av_items" value="Bocinas" />Bocinas</label>
-                        <label className="chip"><input type="checkbox" name="av_items" value="Iluminación" />Iluminación</label>
-                        <label className="chip"><input type="checkbox" name="av_items" value="Muro LED" />Muro LED</label>
-                      </div>
-                      <label htmlFor="avNotes" style={{ marginTop: '12px' }}>Detalles A/V</label>
-                      <textarea className="fld" id="avNotes" name="av_notes" rows={3} placeholder="Ej. 2 micrófonos inalámbricos, HDMI, pantalla cerca del escenario…"></textarea>
-                      {errors.av_notes && <div className="field-error">{errors.av_notes}</div>}
-                    </div>
                     {errors.needs_av && <div className="field-error">{errors.needs_av}</div>}
                   </div>
 
@@ -748,11 +678,6 @@ function App() {
                       <button type="button" className="choice-btn" data-value="Tal vez">Tal vez</button>
                     </div>
                     <input type="hidden" name="media_interest" value="" />
-                    <div id="mediaDetailsWrap" style={{ display: 'none', marginTop: '12px' }}>
-                      <label htmlFor="mediaNotes">Cuéntanos qué buscas</label>
-                      <textarea className="fld" id="mediaNotes" name="media_notes" rows={3} placeholder="Ej. highlight reel, cabina de fotos, dron…"></textarea>
-                      {errors.media_notes && <div className="field-error">{errors.media_notes}</div>}
-                    </div>
                     {errors.media_interest && <div className="field-error">{errors.media_interest}</div>}
                   </div>
 
