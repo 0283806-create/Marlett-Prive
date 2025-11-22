@@ -12,6 +12,9 @@ build/
 .env
 .env.local
 .env.production
+.env.production.local
+.env.preview.local
+.env.vercel*
 
 # IDE
 .vscode/

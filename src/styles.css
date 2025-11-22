@@ -359,10 +359,13 @@ a:hover { text-decoration: underline; }
 .borde-hojas {
   position: absolute;
   inset: 0;
-  background-image: url('/assets/borde-hojas-dark.jpg');
+  background:
+    radial-gradient(circle at 18% 40%, rgba(214, 200, 155, 0.08), transparent 55%),
+    radial-gradient(circle at 85% 15%, rgba(47, 143, 94, 0.09), transparent 50%),
+    linear-gradient(120deg, rgba(8, 12, 10, 0.6), rgba(5, 6, 5, 0.9));
   background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center left;
+  background-size: cover;
+  background-position: center;
   pointer-events: none;
   z-index: 0;
   opacity: 0.4;

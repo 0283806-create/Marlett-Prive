@@ -156,3 +156,13 @@ alter table public.reservations enable row level security;
 - Documentación extensa
 - Tests automatizados
 
+---
+
+## 🧭 Reglas operativas y despliegue
+
+1. **Repositorio único:** Trabajar siempre en `/Users/miguelpulidolozano/Documents/Reservaciones`, el cual está vinculado al repo `0283806-create/Reservation_Marlett` y al proyecto de Vercel `salon_de_eventos_marlett`.
+2. **Variables de entorno:** Mantener `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en `.env.local` (ignoradas por git) y replicarlas en Vercel para `development`, `preview` y `production`. Sin estos valores la app detiene el build.
+3. **Previo a cada push:** Ejecutar `npm run build` y `npm run preview` para asegurar que la versión local coincide con la de producción.
+4. **Deploy confiable:** Usar `npm run deploy`, el cual corre `vercel build --prod` seguido de `vercel deploy --prebuilt --prod` para asegurar que los assets generados localmente son los mismos que recibe Vercel (sin bloques blancos).
+5. **Activos estáticos:** Importar imágenes críticas desde `src/assets` o colocarlas en `public/assets` y referenciarlas con rutas absolutas. Evitar rutas inexistentes (`borde-hojas-dark.jpg`, etc.) para no dejar advertencias en `vite build`.
+
