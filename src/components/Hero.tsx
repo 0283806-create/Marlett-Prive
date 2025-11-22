@@ -1,58 +1,42 @@
 import RandomPhrase from "./RandomPhrase";
+import marlettHero from "../assets/marlett_hero.png";
 
 const heroStyles = `
-.hero-section {
-  padding: clamp(12px, 4vw, 32px) 24px clamp(40px, 8vw, 72px);
-  display: flex;
-  justify-content: center;
+.hero-wrapper {
+  background: #050907;
 }
 
+/* Banda con la imagen frontal */
+.hero-banner {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.hero-banner img {
+  width: 100%;
+  max-height: 460px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Tarjeta que se sobrepone a la imagen */
 .hero-card {
-  width: min(1100px, 100%);
-  background: rgba(18, 24, 20, 0.92);
+  position: relative;
+  width: min(1100px, 100% - 32px);
+  margin: -80px auto 72px;
+  background: rgba(11, 17, 13, 0.96);
   border-radius: 28px;
-  border: 1px solid rgba(214, 200, 155, 0.14);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
-  overflow: hidden;
-  backdrop-filter: blur(12px);
+  border: 1px solid rgba(214, 200, 155, 0.18);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  padding: clamp(28px, 5vw, 40px);
+  backdrop-filter: blur(14px);
+  z-index: 10;
 }
 
-.hero-card-banner {
-  line-height: 0;
-}
-
-.hero-card-banner img {
-  width: 100%;
-  height: clamp(260px, 45vw, 480px);
-  object-fit: cover;
-  display: block;
-  border-radius: 0 0 28px 28px;
-}
-
-.hero-card-content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: clamp(24px, 6vw, 48px);
-}
-
-.hero-card-media {
-  order: 1;
-  border-radius: 20px;
-  overflow: hidden;
-  background: rgba(10, 15, 12, 0.85);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-}
-
-.hero-card-media img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-}
-
+/* Contenido de la tarjeta */
 .hero-card-text {
-  order: 2;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -65,9 +49,9 @@ const heroStyles = `
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: rgba(47, 143, 94, 0.14);
+  background: rgba(47, 143, 94, 0.16);
   color: #d6c89b;
-  border: 1px solid rgba(214, 200, 155, 0.28);
+  border: 1px solid rgba(214, 200, 155, 0.4);
 }
 
 .hero-card-title {
@@ -99,108 +83,86 @@ const heroStyles = `
   letter-spacing: 0.01em;
 }
 
-.hero-card-copy .hero-paragraph {
+.hero-paragraph {
   margin: 0;
   color: rgba(241, 244, 239, 0.86);
   font-size: clamp(15px, 1.25vw, 18px);
   line-height: 1.7;
 }
 
-.hero-card-copy .hero-mantra {
+.hero-mantra {
   margin: 0;
   color: rgba(214, 200, 155, 0.92);
   font-style: italic;
   font-size: clamp(15px, 1.2vw, 18px);
 }
 
-.hero-card-copy .hero-cta-line {
+.hero-cta-line {
   margin: 0;
   color: rgba(192, 226, 205, 0.85);
   font-size: clamp(15px, 1.25vw, 18px);
   font-weight: 600;
 }
 
-@media (min-width: 980px) {
-  .hero-card-content {
-    flex-direction: row;
-    align-items: stretch;
-    gap: 36px;
-  }
-
-  .hero-card-text {
-    order: 1;
-    flex: 1 1 55%;
-  }
-
-  .hero-card-media {
-    order: 2;
-    flex: 1 1 45%;
-  }
-
-  .hero-card-media img {
-    min-height: 100%;
+/* Ajustes responsive */
+@media (max-width: 900px) {
+  .hero-card {
+    margin: -56px auto 56px;
+    border-radius: 24px;
   }
 }
 
-@media (max-width: 720px) {
-  .hero-section {
-    padding: 16px 18px 40px;
+@media (max-width: 640px) {
+  .hero-banner img {
+    max-height: 360px;
   }
 
   .hero-card {
-    border-radius: 24px;
-  }
-
-  .hero-card-content {
-    padding: 24px 20px 32px;
+    width: calc(100% - 24px);
+    padding: 22px 18px 26px;
   }
 }
 `;
 
 export default function Hero() {
   return (
-    <section className="hero-section" aria-label="Portada Marlett">
+    <section className="hero-wrapper" aria-label="Portada Marlett">
       <style>{heroStyles}</style>
+      {/* Imagen frontal completa */}
+      <div className="hero-banner">
+        <img
+          src={marlettHero}
+          alt="Fachada de Marlett Restaurante & Salón de eventos"
+          loading="lazy"
+        />
+      </div>
+      {/* Tarjeta de contenido sobrepuesta, sin foto a la derecha */}
       <div className="hero-card">
-        <div className="hero-card-banner">
-          <img
-            src="/assets/PHOTO-2025-07-09-20-40-28.jpeg"
-            alt="Fachada frontal de Marlett Restaurante"
-            loading="lazy"
-          />
-        </div>
-        <div className="hero-card-content">
-          <figure className="hero-card-media">
-            <img
-              src="/assets/IMG_7431.jpg"
-              alt="Interior del salón principal de Marlett"
-              loading="lazy"
-            />
-          </figure>
-          <div className="hero-card-text">
-            <span className="hero-card-badge">Eventos especiales</span>
-            <h1 className="hero-card-title">Marlett — Altos de Jalisco</h1>
-            <p className="hero-card-subtitle">
-              Restaurante & Salón de eventos • Zapotlanejo / Guadalajara
-            </p>
-            <div className="hero-card-copy">
-              <div className="hero-card-random">
-                <RandomPhrase />
-              </div>
-              <p className="hero-paragraph">
-                Es tu casa para celebrar tus logros, compartir con quienes más importan y ser el escenario donde nacen ideas que dejan huella. Luz cuidada, diseño moderno y detalles pensados para invitarte a quedarte.
-              </p>
-              <p className="hero-mantra">
-                "La conexión multiplica la alegría como el conocimiento multiplica la sabiduría."
-              </p>
-              <p className="hero-cta-line">
-                Agenda tu experiencia y deja que la inspiración te encuentre aquí.
-              </p>
+        <div className="hero-card-text">
+          <span className="hero-card-badge">Eventos especiales</span>
+          <h1 className="hero-card-title">Marlett — Altos de Jalisco</h1>
+          <p className="hero-card-subtitle">
+            Restaurante & Salón de eventos • Zapotlanejo / Guadalajara
+          </p>
+          <div className="hero-card-copy">
+            <div className="hero-card-random">
+              <RandomPhrase />
             </div>
+            <p className="hero-paragraph">
+              En Marlett, los momentos se vuelven memorias: de esas que se cuentan, se comparten y se atesoran en familia.
+            </p>
+            <p className="hero-paragraph">
+              Es tu casa para celebrar tus logros, compartir con quienes más importan y ser el escenario donde nacen ideas que dejan huella. Luz cuidada, diseño moderno y detalles pensados para invitarte a quedarte.
+            </p>
+            <p className="hero-mantra">
+              "La conexión multiplica la alegría como el conocimiento multiplica la sabiduría."
+            </p>
+            <p className="hero-cta-line">
+              Agenda tu experiencia y deja que la inspiración te encuentre aquí.
+            </p>
           </div>
         </div>
       </div>
     </section>
   );
 }
-
