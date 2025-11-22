@@ -546,7 +546,7 @@ a:hover { text-decoration: underline; }
 /* Subtítulos */
 .form-top .eyebrow {
   font-family: "Playfair Display", serif;
-  font-size: clamp(0.95rem, 1.1vw, 1.15rem);
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0.04em;
@@ -556,7 +556,7 @@ a:hover { text-decoration: underline; }
 
 .header strong {
   font-family: "Playfair Display", serif;
-  font-size: clamp(0.95rem, 1.1vw, 1.15rem);
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
   font-weight: 600;
   letter-spacing: 0.04em;
   color: #e2d4aa;
@@ -580,7 +580,7 @@ a:hover { text-decoration: underline; }
   font-family: "Playfair Display", serif;
   grid-column: 1 / -1;
   margin: 40px 0 16px 0;
-  font-size: clamp(0.95rem, 1.1vw, 1.15rem);
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
   font-weight: 600;
   color: #e2d4aa;
   letter-spacing: 0.04em;
@@ -663,7 +663,7 @@ a:hover { text-decoration: underline; }
 
 .letter-block .form-label {
   font-family: "Playfair Display", serif;
-  font-size: clamp(0.95rem, 1.1vw, 1.15rem);
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
   font-weight: 600;
   color: #e2d4aa;
   letter-spacing: 0.04em;
