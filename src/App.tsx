@@ -529,8 +529,13 @@ function App() {
         <section className="wrap grid grid-2" aria-label="Reservación">
           <div className="card pad reservation-card">
             <div className="marlett-panel">
-              <div className="marlett-badge">
-                <img src="/assets/Marlett_high_contrast.jpg" alt="Marlett — Reserva tu evento" className="marlett-badge-img" loading="lazy" decoding="async" />
+              <div className="marlett-brand-banner" aria-hidden="true">
+                <img
+                  src="/assets/Marlett.png"
+                  alt="Logo Marlett"
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
               <div className="panel-body">
                 <div className="header">
