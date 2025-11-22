@@ -493,27 +493,35 @@ a:hover { text-decoration: underline; }
 
 .marlett-brand-banner {
   width: 100%;
-  min-height: clamp(120px, 18vw, 180px);
-  border-radius: 28px;
-  background:
-    linear-gradient(135deg, rgba(243, 220, 157, 0.95), rgba(185, 152, 84, 0.9)),
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.45), transparent 60%);
-  border: 1px solid rgba(214, 200, 155, 0.55);
+  max-width: 720px;
+  margin: 0 auto 32px;
+  border-radius: 32px;
+  background: linear-gradient(135deg, #f7e7c0, #d6c89b, #c3a96d);
+  padding: clamp(12px, 2.5vw, 20px);
   box-shadow:
-    0 24px 50px rgba(0, 0, 0, 0.45),
-    inset 0 1px 8px rgba(255, 255, 255, 0.35);
+    0 22px 50px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(16px, 4vw, 28px);
   overflow: hidden;
 }
 
-.marlett-brand-banner img {
-  width: clamp(140px, 32vw, 240px);
-  height: auto;
+.marlett-brand-logo {
+  width: 100%;
+  height: 100%;
+  max-height: clamp(90px, 18vw, 150px);
   object-fit: contain;
-  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.35));
+  border-radius: inherit;
+  display: block;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.35));
+}
+
+@media (max-width: 640px) {
+  .marlett-brand-banner {
+    border-radius: 24px;
+    margin-bottom: 24px;
+  }
 }
 
 .panel-body {

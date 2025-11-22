@@ -532,7 +532,8 @@ function App() {
               <div className="marlett-brand-banner" aria-hidden="true">
                 <img
                   src="/assets/Marlett.png"
-                  alt="Logo Marlett"
+                  alt="Marlett"
+                  className="marlett-brand-logo"
                   loading="lazy"
                   decoding="async"
                 />
