@@ -168,8 +168,13 @@ function App() {
       const name = (fd.get('name') || '').toString().trim();
       const phone = (fd.get('phone') || '').toString().replace(/\D/g, '');
       const guestsValue = Number(fd.get('guests'));
-      const needsAV = (fd.get('needs_av') || '').toString().trim();
-      const mediaInterest = (fd.get('media_interest') || '').toString().trim();
+      
+      // Obtener valores de los campos hidden directamente del DOM para asegurar que estén actualizados
+      const needsAVInput = form.querySelector<HTMLInputElement>('input[name="needs_av"]');
+      const mediaInterestInput = form.querySelector<HTMLInputElement>('input[name="media_interest"]');
+      const needsAV = (needsAVInput?.value || fd.get('needs_av') || '').toString().trim();
+      const mediaInterest = (mediaInterestInput?.value || fd.get('media_interest') || '').toString().trim();
+      
       const consent = (document.getElementById('consent') as HTMLInputElement | null)?.checked;
 
       check('name', name.length >= 2, 'Por favor, escribe tu nombre completo.');
@@ -178,8 +183,8 @@ function App() {
       check('time', Boolean(fd.get('time')), 'Indica la hora de inicio del evento.');
       check('guests', !Number.isNaN(guestsValue) && guestsValue >= 1 && guestsValue <= 1000, 'La cantidad de invitados debe estar entre 1 y 1000.');
       check('eventType', Boolean(fd.get('event_type')), 'Selecciona el tipo de evento.');
-      check('needs_av', needsAV !== '', 'Selecciona si necesitas equipo audiovisual.');
-      check('media_interest', mediaInterest !== '', 'Selecciona si te interesan paquetes de foto/video.');
+      check('needs_av', needsAV !== '' && (needsAV === 'Sí' || needsAV === 'No' || needsAV === 'Tal vez'), 'Selecciona si necesitas equipo audiovisual.');
+      check('media_interest', mediaInterest !== '' && (mediaInterest === 'Sí' || mediaInterest === 'No' || mediaInterest === 'Tal vez'), 'Selecciona si te interesan paquetes de foto/video.');
       check('consent', Boolean(consent), 'Debes aceptar el contacto por WhatsApp o llamada.');
 
       setErrors(newErrors);
@@ -287,8 +292,15 @@ function App() {
       const fd = new FormData(form);
 
       const getValue = (key: string) => {
+        // Para campos hidden de choice groups, obtener directamente del DOM para asegurar valores actualizados
+        if (key === 'needs_av' || key === 'media_interest') {
+          const input = form.querySelector<HTMLInputElement>(`input[name="${key}"]`);
+          if (input && input.value && input.value.trim() !== '') {
+            return input.value.trim();
+          }
+        }
         const value = fd.get(key);
-        return value !== null ? value.toString() : null;
+        return value !== null && value.toString().trim() !== '' ? value.toString().trim() : null;
       };
 
       const invitadosRaw = parseInt((fd.get('guests') || '0').toString(), 10);
