@@ -6,11 +6,11 @@ import SuccessToast from './components/SuccessToast';
 const MARLETT_WHATSAPP = '523319006852';
 
 const ambientes = [
-  { id: 'lobby', title: 'Lobby', description: 'Acceso elegante con iluminación cálida.', image: '/assets/IMG_7432.jpg' },
   { id: 'accesibilidad', title: 'Accesibilidad', description: 'Rampas y circulación cómoda para todos.', image: '/assets/IMG_7429.jpg' },
+  { id: 'detalles', title: 'Detalles', description: 'Acabados contemporáneos.', image: '/assets/IMG_7434.jpg' },
   { id: 'lounge', title: 'Lounge & Bar', description: 'Para convivios, cocteles y afters.', image: '/assets/IMG_7431.jpg' },
   { id: 'auditorio', title: 'Auditorio', description: 'Montaje tipo conferencia.', image: '/assets/IMG_7436.jpg' },
-  { id: 'detalles', title: 'Detalles', description: 'Acabados contemporáneos.', image: '/assets/IMG_7434.jpg' },
+  { id: 'lobby', title: 'Lobby', description: 'Acceso elegante con iluminación cálida.', image: '/assets/IMG_7432.jpg' },
   { id: 'salon', title: 'Sala Marlett', description: 'El lugar para tus celebraciones.', image: '/assets/IMG_7436.jpg' }
 ];
 
