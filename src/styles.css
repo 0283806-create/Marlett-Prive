@@ -40,7 +40,9 @@
 /* Hero */
 .hero-section {
   background: #050907;
-  padding: clamp(32px, 8vw, 72px) clamp(16px, 6vw, 40px) clamp(60px, 11vw, 108px);
+  padding: clamp(8px, 2vw, 16px) clamp(16px, 6vw, 40px) clamp(60px, 11vw, 108px);
+  margin-top: -24px;
+  padding-top: clamp(8px, 2vw, 16px);
 }
 
 .hero-heroWrapper {
@@ -166,7 +168,9 @@
 
 @media (max-width: 720px) {
   .hero-section {
-    padding: clamp(28px, 10vw, 52px) clamp(14px, 7vw, 24px) clamp(48px, 16vw, 74px);
+    padding: clamp(8px, 2vw, 12px) clamp(14px, 7vw, 24px) clamp(48px, 16vw, 74px);
+    margin-top: -16px;
+    padding-top: clamp(8px, 2vw, 12px);
   }
 
   .hero-card {
@@ -426,6 +430,11 @@ a:hover { text-decoration: underline; }
   object-fit: cover;
   border-radius: 18px;
   box-shadow: 0 18px 40px rgba(0,0,0,.32);
+}
+
+/* Ajuste específico para imagen de Accesibilidad - mejor encuadre */
+.ambiente-item[data-id="accesibilidad"] img {
+  object-position: 50% 15%;
 }
 
 .ambiente-caption h3 { margin: 0; font-size: 20px; }
