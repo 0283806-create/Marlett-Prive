@@ -158,6 +158,18 @@ function App() {
 
     const validateForm = () => {
       if (!form) return false;
+      
+      // Forzar actualización de valores de choice groups antes de validar
+      document.querySelectorAll<HTMLElement>('.choice-group').forEach((group) => {
+        const hidden = group.nextElementSibling as HTMLInputElement | null;
+        if (!hidden || hidden.type !== 'hidden') return;
+        const activeBtn = group.querySelector<HTMLButtonElement>('.choice-btn.is-active');
+        if (activeBtn) {
+          const value = (activeBtn.dataset.value || activeBtn.textContent || '').trim();
+          if (value) hidden.value = value;
+        }
+      });
+      
       const fd = new FormData(form);
       const newErrors: Record<string, string> = {};
 
@@ -183,8 +195,10 @@ function App() {
       check('time', Boolean(fd.get('time')), 'Indica la hora de inicio del evento.');
       check('guests', !Number.isNaN(guestsValue) && guestsValue >= 1 && guestsValue <= 1000, 'La cantidad de invitados debe estar entre 1 y 1000.');
       check('eventType', Boolean(fd.get('event_type')), 'Selecciona el tipo de evento.');
-      check('needs_av', needsAV !== '' && (needsAV === 'Sí' || needsAV === 'No' || needsAV === 'Tal vez'), 'Selecciona si necesitas equipo audiovisual.');
-      check('media_interest', mediaInterest !== '' && (mediaInterest === 'Sí' || mediaInterest === 'No' || mediaInterest === 'Tal vez'), 'Selecciona si te interesan paquetes de foto/video.');
+      
+      // Validación simplificada: solo verificar que haya un valor seleccionado (Sí, No o Tal vez)
+      check('needs_av', needsAV !== '' && needsAV.length > 0, 'Selecciona si necesitas equipo audiovisual.');
+      check('media_interest', mediaInterest !== '' && mediaInterest.length > 0, 'Selecciona si te interesan paquetes de foto/video.');
       check('consent', Boolean(consent), 'Debes aceptar el contacto por WhatsApp o llamada.');
 
       setErrors(newErrors);
@@ -289,6 +303,18 @@ function App() {
       }
 
       const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      
+      // Forzar actualización de valores de choice groups antes de crear FormData
+      document.querySelectorAll<HTMLElement>('.choice-group').forEach((group) => {
+        const hidden = group.nextElementSibling as HTMLInputElement | null;
+        if (!hidden || hidden.type !== 'hidden') return;
+        const activeBtn = group.querySelector<HTMLButtonElement>('.choice-btn.is-active');
+        if (activeBtn) {
+          const value = (activeBtn.dataset.value || activeBtn.textContent || '').trim();
+          if (value) hidden.value = value;
+        }
+      });
+      
       const fd = new FormData(form);
 
       const getValue = (key: string) => {
@@ -298,6 +324,7 @@ function App() {
           if (input && input.value && input.value.trim() !== '') {
             return input.value.trim();
           }
+          return null;
         }
         const value = fd.get(key);
         return value !== null && value.toString().trim() !== '' ? value.toString().trim() : null;
@@ -307,18 +334,22 @@ function App() {
       const invitados = Number.isNaN(invitadosRaw)
         ? 1
         : Math.min(Math.max(invitadosRaw, 1), 1000);
+      // Asegurar que needs_av y media_interest tengan valores válidos
+      const needsAVValue = getValue('needs_av') || '';
+      const mediaInterestValue = getValue('media_interest') || '';
+      
       const reservationData = {
         nombre_completo: getValue('name') || '',
         telefono_whatsapp: getValue('phone') || '',
-        correo: getValue('email'),
-        area_preferida: getValue('venue_area'),
+        correo: getValue('email') || null,
+        area_preferida: getValue('venue_area') || null,
         tipo_evento: getValue('event_type') || '',
         fecha_evento: getValue('date') || new Date().toISOString().slice(0, 10),
-        hora_inicio: getValue('time'),
+        hora_inicio: getValue('time') || null,
         cantidad_invitados: invitados,
-        needs_av: getValue('needs_av'),
-        media_interest: getValue('media_interest'),
-        notes: getValue('notes'),
+        needs_av: needsAVValue || null,
+        media_interest: mediaInterestValue || null,
+        notes: getValue('notes') || null,
         status: 'pending'
       };
 
@@ -684,7 +715,7 @@ function App() {
                       <button type="button" className="choice-btn" data-value="No">No</button>
                       <button type="button" className="choice-btn" data-value="Tal vez">Tal vez</button>
                     </div>
-                    <input type="hidden" name="needs_av" value="" />
+                    <input type="hidden" name="needs_av" value="" required={false} />
                     {errors.needs_av && <div className="field-error">{errors.needs_av}</div>}
                   </div>
 
@@ -695,7 +726,7 @@ function App() {
                       <button type="button" className="choice-btn" data-value="No">No</button>
                       <button type="button" className="choice-btn" data-value="Tal vez">Tal vez</button>
                     </div>
-                    <input type="hidden" name="media_interest" value="" />
+                    <input type="hidden" name="media_interest" value="" required={false} />
                     {errors.media_interest && <div className="field-error">{errors.media_interest}</div>}
                   </div>
 
