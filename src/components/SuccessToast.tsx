@@ -26,7 +26,7 @@ const SuccessToast: React.FC<SuccessToastProps> = ({ visible, onDismiss }) => {
         <h2 className="success-toast-title">Solicitud enviada</h2>
         <p className="success-toast-text">
           Gracias por compartir los detalles de tu evento.
-          Nuestro equipo de Marlett se pondrá en contacto contigo muy pronto
+          Te contactaremos por correo o teléfono muy pronto
           para confirmar disponibilidad y resolver cualquier duda.
         </p>
         <button

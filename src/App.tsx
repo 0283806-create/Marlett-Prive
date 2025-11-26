@@ -3,8 +3,6 @@ import Hero from './components/Hero';
 import { SUPABASE_ANON_KEY, SUPABASE_URL, supabase } from './lib/supabaseClient';
 import SuccessToast from './components/SuccessToast';
 
-const MARLETT_WHATSAPP = '523319006852';
-
 const ambientes = [
   { id: 'accesibilidad', title: 'Accesibilidad', description: 'Rampas y circulación cómoda para todos.', image: '/assets/IMG_7429.jpg' },
   { id: 'detalles', title: 'Detalles', description: 'Acabados contemporáneos.', image: '/assets/IMG_7434.jpg' },
@@ -86,8 +84,6 @@ function App() {
     const form = document.getElementById('resForm') as HTMLFormElement | null;
     const previewBtn = document.getElementById('previewBtn');
     const previewEl = document.getElementById('preview');
-    const ctaWapp = document.getElementById('ctaWapp');
-    const navbarWapp = document.getElementById('navbarWapp');
     const errorPanel = document.getElementById('formError');
 
     const setMinDate = () => {
@@ -199,7 +195,7 @@ function App() {
       // Validación simplificada: solo verificar que haya un valor seleccionado (Sí, No o Tal vez)
       check('needs_av', needsAV !== '' && needsAV.length > 0, 'Selecciona si necesitas equipo audiovisual.');
       check('media_interest', mediaInterest !== '' && mediaInterest.length > 0, 'Selecciona si te interesan paquetes de foto/video.');
-      check('consent', Boolean(consent), 'Debes aceptar el contacto por WhatsApp o llamada.');
+      check('consent', Boolean(consent), 'Debes aceptar el contacto por correo o teléfono.');
 
       setErrors(newErrors);
 
@@ -253,46 +249,6 @@ function App() {
       previewEl.style.display = 'block';
     };
 
-    const getWhatsAppNumber = () => MARLETT_WHATSAPP;
-
-    const buildWhatsAppText = (fd: FormData) => {
-      const parts: string[] = [];
-      const addLine = (label: string, value: string | null) => {
-        if (value && value.trim() && value !== '—') parts.push(`• ${label}: ${value}`);
-      };
-
-      const mapValue = (key: string) => (fd.get(key) || '—').toString();
-
-      addLine('Nombre', mapValue('name'));
-      addLine('Teléfono', mapValue('phone'));
-      addLine('Fecha', mapValue('date'));
-      addLine('Hora', mapValue('time'));
-      addLine('Invitados', mapValue('guests'));
-      addLine('Tipo de evento', mapValue('event_type'));
-      const venue = mapValue('venue_area');
-      if (venue && venue !== '—') addLine('Área preferida', venue);
-      addLine('A/V', mapValue('needs_av'));
-
-      addLine('Foto/Video', mapValue('media_interest'));
-      const notes = mapValue('notes');
-      if (notes && notes !== '—') addLine('Notas adicionales', notes);
-
-      if (!parts.length) {
-        parts.push('Hola, me gustaría más información sobre eventos en Marlett.');
-      }
-
-      return parts.join('\n');
-    };
-
-    const openWhatsAppWithText = (numberDigitsOnly: string, text: string) => {
-      if (!numberDigitsOnly) {
-        alert('No hay un número de WhatsApp configurado para Marlett.');
-        return;
-      }
-      const url = `https://wa.me/${numberDigitsOnly}?text=${encodeURIComponent(text)}`;
-      const win = window.open(url, '_blank', 'noopener,noreferrer');
-      if (!win) window.location.href = url;
-    };
 
     const handleSubmit = async (event: Event) => {
       event.preventDefault();
@@ -388,9 +344,6 @@ function App() {
           if (previewEl) previewEl.style.display = 'none';
         }, 10000);
 
-        const waText = buildWhatsAppText(fd);
-        openWhatsAppWithText(getWhatsAppNumber(), waText);
-
         form.reset();
         setErrors({});
       } catch (err) {
@@ -410,15 +363,6 @@ function App() {
       }
     };
 
-    const handleQuickWhatsApp = (defaultMessage?: string) => {
-      if (!form) {
-        openWhatsAppWithText(MARLETT_WHATSAPP, defaultMessage || 'Hola, me gustaría más información sobre eventos en Marlett.');
-        return;
-      }
-      const fd = new FormData(form);
-      const text = buildWhatsAppText(fd);
-      openWhatsAppWithText(getWhatsAppNumber(), text);
-    };
 
     const handlePreviewClick = () => showPreview();
 
@@ -487,10 +431,6 @@ function App() {
       addListener(document, 'blur', handleBlur as EventListener, true);
       addListener(previewBtn, 'click', handlePreviewClick as EventListener);
 
-      const ctaHandler = () => handleQuickWhatsApp();
-      addListener(ctaWapp, 'click', ctaHandler);
-      addListener(navbarWapp, 'click', ctaHandler);
-
       setMinDate();
       initChoiceGroups();
     }
@@ -521,10 +461,6 @@ function App() {
           </div>
           <div className="navbar-actions top-actions">
             <a href="#resForm" className="navbar-cta">Reservar mi fecha</a>
-            <button type="button" className="navbar-cta-ghost" id="navbarWapp">
-              <img src="/assets/Whatappmarlett.png" alt="WhatsApp" className="whatsapp-icon" />
-              WhatsApp Marlett
-            </button>
           </div>
         </div>
       </header>
@@ -585,17 +521,17 @@ function App() {
                 <div className="header">
                   <div>
                     <strong>Reserva tu evento</strong><br />
-                    <small>Responderemos rápido por WhatsApp o correo.</small>
+                    <small>Responderemos rápido por correo o teléfono.</small>
                   </div>
                 </div>
 
                 <div className="form-top">
                   <p className="eyebrow">Coordinación personal</p>
                   <h2>Agenda tu evento en Marlett</h2>
-                  <p className="sub">Te contactamos por WhatsApp para confirmar disponibilidad.</p>
+                  <p className="sub">Te contactamos por correo o teléfono para confirmar disponibilidad.</p>
                 </div>
 
-                <form id="resForm" className="form-grid" noValidate data-whatsapp="+52 33 1900 6852">
+                <form id="resForm" className="form-grid" noValidate>
                   <div id="formError" className="form-error" role="alert"></div>
                   <p className="section-title">Información de contacto</p>
                   <div className="row-span-2 section soft-panel" aria-label="Información de contacto">
@@ -606,9 +542,9 @@ function App() {
                         {errors.name && <div className="field-error">{errors.name}</div>}
                       </div>
                       <div className="form-field">
-                        <label htmlFor="phone">Teléfono (WhatsApp) <span className="req">*</span></label>
+                        <label htmlFor="phone">Teléfono <span className="req">*</span></label>
                         <input className="fld" id="phone" name="phone" type="tel" inputMode="tel" placeholder="+52 33 1234 5678" autoComplete="tel" required />
-                        <div className="hint">WhatsApp o celular de contacto.</div>
+                        <div className="hint">Teléfono de contacto.</div>
                         {errors.phone && <div className="field-error">{errors.phone}</div>}
                       </div>
                     </div>
@@ -746,7 +682,7 @@ Me gustaría compartir algunos detalles sobre mi evento..."
                     <div className="hint" style={{ marginTop: '10px' }}>Usaremos tu información solo para dar seguimiento a tu solicitud.</div>
                     <label className="consent-label">
                       <input type="checkbox" id="consent" required />
-                      Acepto ser contactad@ por WhatsApp/llamada para confirmar mi evento <span className="req">*</span>
+                      Acepto ser contactad@ por correo o teléfono para confirmar mi evento <span className="req">*</span>
                     </label>
                     {errors.consent && <div className="field-error">{errors.consent}</div>}
                   </div>
@@ -770,10 +706,6 @@ Me gustaría compartir algunos detalles sobre mi evento..."
           </aside>
         </section>
 
-        <button className="sticky-cta" id="ctaWapp">
-          <img src="/assets/Whatappmarlett.png" alt="WhatsApp" className="whatsapp-icon" />
-          WhatsApp Marlett
-        </button>
       </main>
     </div>
   );
