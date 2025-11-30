@@ -26,7 +26,7 @@ export default function Hero() {
               <RandomPhrase />
             </div>
             <p className="hero-paragraph">
-              En Marlett, los momentos se vuelven memorias: de esas que se cuentan, se comparten y se atesoran en familia.
+              En Marlett, los momentos se viven en familia, se celebran juntos y se vuelven memorias que se atesoran.
             </p>
             <p className="hero-paragraph">
               Es tu casa para celebrar tus logros, compartir con quienes más importan y ser el escenario donde nacen ideas que dejan huella. Luz cuidada, diseño moderno y detalles pensados para invitarte a quedarte.
