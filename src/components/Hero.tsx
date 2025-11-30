@@ -1,4 +1,3 @@
-import RandomPhrase from "./RandomPhrase";
 import heroImage from "../assets/fachada-marlett.jpeg";
 
 export default function Hero() {
@@ -22,11 +21,8 @@ export default function Hero() {
           </p>
 
           <div className="hero-cardCopy">
-            <div className="hero-cardRandom">
-              <RandomPhrase />
-            </div>
             <p className="hero-paragraph">
-              En Marlett, los momentos se viven en familia, se celebran juntos y se vuelven memorias que se atesoran.
+              En Marlett, no solo celebramos eventos: celebramos historias que merecen ser recordadas.
             </p>
             <p className="hero-paragraph">
               Es tu casa para celebrar tus logros, compartir con quienes más importan y ser el escenario donde nacen ideas que dejan huella. Luz cuidada, diseño moderno y detalles pensados para invitarte a quedarte.
