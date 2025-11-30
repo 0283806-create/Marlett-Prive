@@ -455,7 +455,7 @@ function App() {
       <header className="navbar">
         <div className="navbar-inner">
           <img src="/assets/Marlett_high_contrast.jpg" alt="Marlett Logo" className="navbar-logo" />
-          <div className="navbar-text navbar-title">
+          <div className="navbar-text navbar-title site-brand">
             <h1>Marlett</h1>
             <p>Agenda tu evento — Restaurante &amp; Salón de eventos</p>
           </div>
