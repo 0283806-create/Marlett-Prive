@@ -104,8 +104,8 @@ function App() {
         if (!isValid) message = 'La hora debe estar entre las 8:00 AM y las 12:00 AM (medianoche).';
       } else if (id === 'guests') {
         const num = Number(value);
-        isValid = num >= 1 && num <= 1000;
-        if (!isValid) message = 'La cantidad de invitados debe estar entre 1 y 1000.';
+        isValid = num >= 1 && num <= 499;
+        if (!isValid) message = 'La cantidad de invitados debe estar entre 1 y 499.';
       } else if (id === 'eventType') {
         isValid = value !== '';
         if (!isValid) message = 'Selecciona el tipo de evento.';
@@ -184,7 +184,7 @@ function App() {
       );
       check('time', isValidTime, 'La hora debe estar entre las 8:00 AM y las 12:00 AM (medianoche).');
       
-      check('guests', !Number.isNaN(guestsValue) && guestsValue >= 1 && guestsValue <= 1000, 'La cantidad de invitados debe estar entre 1 y 1000.');
+      check('guests', !Number.isNaN(guestsValue) && guestsValue >= 1 && guestsValue <= 499, 'La cantidad de invitados debe estar entre 1 y 499.');
       check('eventType', Boolean(fd.get('event_type')), 'Selecciona el tipo de evento.');
       
       // Validación simplificada: solo verificar que haya un valor seleccionado (Sí, No o Tal vez)
@@ -284,7 +284,7 @@ function App() {
       const invitadosRaw = parseInt((fd.get('guests') || '0').toString(), 10);
       const invitados = Number.isNaN(invitadosRaw)
         ? 1
-        : Math.min(Math.max(invitadosRaw, 1), 1000);
+        : Math.min(Math.max(invitadosRaw, 1), 499);
       // Asegurar que needs_av y media_interest tengan valores válidos
       const needsAVValue = getValue('needs_av') || '';
       const mediaInterestValue = getValue('media_interest') || '';
@@ -601,7 +601,7 @@ function App() {
                           name="guests"
                           type="number"
                           min={1}
-                          max={1000}
+                          max={499}
                           placeholder="Ej. 120"
                           required
                         />
