@@ -113,8 +113,11 @@ function App() {
         isValid = value !== '';
         if (!isValid) message = 'Selecciona una fecha para tu evento.';
       } else if (id === 'time') {
-        isValid = value !== '';
-        if (!isValid) message = 'Indica la hora de inicio del evento.';
+        isValid = value !== '' && (
+          value === '00:00' ||
+          (value >= '08:00' && value <= '23:59')
+        );
+        if (!isValid) message = 'La hora debe estar entre las 8:00 AM y las 12:00 AM (medianoche).';
       } else if (id === 'guests') {
         const num = Number(value);
         isValid = num >= 1 && num <= 1000;
@@ -188,7 +191,15 @@ function App() {
       check('name', name.length >= 2, 'Por favor, escribe tu nombre completo.');
       check('phone', phone.length >= 8, 'El teléfono debe tener al menos 8 dígitos.');
       check('date', Boolean(fd.get('date')), 'Selecciona una fecha para tu evento.');
-      check('time', Boolean(fd.get('time')), 'Indica la hora de inicio del evento.');
+      
+      // Validación de hora: 08:00-23:59 o 00:00 (medianoche)
+      const timeValue = (fd.get('time') || '').toString().trim();
+      const isValidTime = timeValue !== '' && (
+        timeValue === '00:00' ||
+        (timeValue >= '08:00' && timeValue <= '23:59')
+      );
+      check('time', isValidTime, 'La hora debe estar entre las 8:00 AM y las 12:00 AM (medianoche).');
+      
       check('guests', !Number.isNaN(guestsValue) && guestsValue >= 1 && guestsValue <= 1000, 'La cantidad de invitados debe estar entre 1 y 1000.');
       check('eventType', Boolean(fd.get('event_type')), 'Selecciona el tipo de evento.');
       
@@ -594,6 +605,8 @@ function App() {
                           id="time"
                           name="time"
                           type="time"
+                          min="08:00"
+                          max="23:59"
                           required
                         />
                         {errors.time && <div className="field-error">{errors.time}</div>}
