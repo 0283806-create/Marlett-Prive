@@ -12,30 +12,6 @@
   --shadow: 0 24px 60px rgba(0,0,0,.45);
 }
 
-.theme-altos {
-  --bg:#0e1210; --panel:#121814; --text:#f1f5f0; --muted:#9aa8a0;
-  --brand:#2f8f5e; --accent:#d6c89b; --border:rgba(214,200,155,0.08);
-}
-
-.theme-marfil {
-  --bg:#f7f6f3; --panel:#ffffff; --text:#1a1d1b; --muted:#5c6b63;
-  --brand:#2c7a58; --accent:#c49a46; --border:#e6e4df;
-}
-
-.theme-dorado {
-  --bg:#0c0c0e;
-  --panel:#131312;
-  --text:#f1efe8;
-  --muted:#a2a096;
-  --brand:#d5b66a;
-  --accent:#ffcc7a;
-  --border:#2b2b2d;
-}
-
-.theme-terracota {
-  --bg:#120e0c; --panel:#1a1411; --text:#f2ede7; --muted:#b6a79c;
-  --brand:#d97757; --accent:#f0c27b; --border:#2b211c;
-}
 
 /* Hero */
 .hero-section {
@@ -361,35 +337,6 @@ a:hover { text-decoration: underline; }
 }
 
 
-/* Theme picker */
-#themePicker {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  z-index: 99;
-  display: flex;
-  gap: 6px;
-  backdrop-filter: blur(6px);
-  padding: 6px 8px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: color-mix(in oklab, var(--panel) 75%, transparent);
-}
-
-#themePicker .tbtn {
-  border: 1px solid var(--border);
-  padding: 6px 10px;
-  border-radius: 10px;
-  background: var(--panel);
-  color: var(--text);
-  cursor: pointer;
-  font-size: 12px;
-  transition: background .2s ease, border-color .2s ease;
-}
-
-#themePicker .tbtn:hover {
-  border-color: rgba(214,200,155,0.3);
-}
 
 /* Main layout */
 .wrap {
@@ -926,8 +873,6 @@ a:hover { text-decoration: underline; }
   }
 
   .navbar-inner { gap: 12px; }
-
-  #themePicker { display: none; }
 
   .grid-2 { grid-template-columns: 1fr; }
 

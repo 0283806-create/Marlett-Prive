@@ -29,22 +29,6 @@ function App() {
       listeners.push(() => target.removeEventListener(type, handler, options));
     };
 
-    const THEME_KEY = 'marlett-theme';
-    const body = document.body;
-    const themeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('#themePicker .tbtn'));
-
-    const applyTheme = (theme: string) => {
-      body.className = theme;
-      localStorage.setItem(THEME_KEY, theme);
-    };
-
-    const savedTheme = localStorage.getItem(THEME_KEY) || 'theme-altos';
-    applyTheme(savedTheme);
-
-    themeButtons.forEach((button) => {
-      const handler = () => applyTheme(button.dataset.theme || 'theme-altos');
-      addListener(button, 'click', handler);
-    });
 
     /* Carrusel de ambientes */
     const track = document.querySelector<HTMLDivElement>('.ambientes-track');
@@ -456,12 +440,6 @@ function App() {
     <div className="app-shell">
       <SuccessToast visible={showSuccess} onDismiss={() => setShowSuccess(false)} />
       <Hero />
-      <div id="themePicker">
-        <button data-theme="theme-altos" className="tbtn">Altos</button>
-        <button data-theme="theme-marfil" className="tbtn">Marfil</button>
-        <button data-theme="theme-dorado" className="tbtn">Dorado</button>
-        <button data-theme="theme-terracota" className="tbtn">Terracota</button>
-      </div>
 
       <header className="navbar">
         <div className="navbar-inner">
