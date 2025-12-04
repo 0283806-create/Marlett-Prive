@@ -12,6 +12,11 @@ const ambientes = [
   { id: 'salon', title: 'Sala Marlett', description: 'El lugar para tus celebraciones.', image: '/assets/IMG_7436.jpg' }
 ];
 
+const generateEventId = () => {
+  const random = Math.floor(Math.random() * 1_000_000);
+  return `evento-id${random.toString().padStart(6, '0')}`;
+};
+
 function App() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -289,7 +294,10 @@ function App() {
       const needsAVValue = getValue('needs_av') || '';
       const mediaInterestValue = getValue('media_interest') || '';
       
+      const eventId = generateEventId();
+
       const reservationData = {
+        evento_id: eventId,
         nombre_completo: getValue('name') || '',
         telefono_whatsapp: getValue('phone') || '',
         correo: getValue('email') || null,
