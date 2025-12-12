@@ -211,6 +211,17 @@ Reservaciones/
 - Check that all columns are created correctly
 - Ensure your Supabase credentials are correct in `app.js`
 
+## Dominios y redirecciones (Vercel)
+
+1. En Vercel, abre tu proyecto `salon_de_eventos_marlett`.
+2. Ve a **Settings → Domains** y haz clic en **Add Domain**.
+3. Ingresa tu dominio principal (por ejemplo, `marlettprive.mx`) y confírmalo.
+4. Cuando esté verificado, selecciónalo y elige **Set as Primary** para el entorno **Production**.
+5. Agrega el dominio anterior (por ejemplo, `eventosmarlett.mx`) y en las acciones selecciona **Redirect to another domain**.
+6. Configura el redireccionamiento como **301 Permanent** hacia el dominio principal nuevo.
+7. Actualiza los registros DNS en tu proveedor para apuntar a los registros proporcionados por Vercel.
+8. Añade o actualiza la variable `VITE_SITE_URL` en **Settings → Environment Variables** (Production y Preview) con la URL canónica, por ejemplo `https://marlettprive.mx`.
+
 ## Contributing
 
 Feel free to submit issues and enhancement requests!

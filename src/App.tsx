@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Hero from './components/Hero';
+import { SITE_URL, withSiteUrl } from './lib/config';
 import { SUPABASE_ANON_KEY, SUPABASE_URL, supabase } from './lib/supabaseClient';
 import SuccessToast from './components/SuccessToast';
 
@@ -20,6 +21,70 @@ const generateEventId = () => {
 function App() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    document.title = 'Reservaciones | Marlett Privé';
+
+    function ensureTag<T extends HTMLElement>(selector: string, createTag: () => T): T {
+      const existing = document.head.querySelector<T>(selector);
+      if (existing) return existing;
+      const tag = createTag();
+      document.head.appendChild(tag);
+      return tag;
+    }
+
+    const canonicalLink = ensureTag<HTMLLinkElement>('link[rel="canonical"]', () => {
+      const link = document.createElement('link');
+      link.setAttribute('rel', 'canonical');
+      return link;
+    });
+    canonicalLink.href = SITE_URL;
+
+    const ogUrlMeta = ensureTag<HTMLMetaElement>('meta[property="og:url"]', () => {
+      const meta = document.createElement('meta');
+      meta.setAttribute('property', 'og:url');
+      return meta;
+    });
+    ogUrlMeta.setAttribute('content', SITE_URL);
+
+    const ogTitleMeta = ensureTag<HTMLMetaElement>('meta[property="og:title"]', () => {
+      const meta = document.createElement('meta');
+      meta.setAttribute('property', 'og:title');
+      return meta;
+    });
+    ogTitleMeta.setAttribute('content', 'Reservaciones | Marlett Privé');
+
+    const ogImageMeta = ensureTag<HTMLMetaElement>('meta[property="og:image"]', () => {
+      const meta = document.createElement('meta');
+      meta.setAttribute('property', 'og:image');
+      return meta;
+    });
+    ogImageMeta.setAttribute('content', withSiteUrl('/assets/marlett_hero.png'));
+
+    const ogDescriptionMeta = ensureTag<HTMLMetaElement>('meta[property="og:description"]', () => {
+      const meta = document.createElement('meta');
+      meta.setAttribute('property', 'og:description');
+      return meta;
+    });
+    ogDescriptionMeta.setAttribute(
+      'content',
+      'Agenda tu evento privado en Marlett Privé y recibe atención personalizada.'
+    );
+
+    const twitterCard = ensureTag<HTMLMetaElement>('meta[name="twitter:card"]', () => {
+      const meta = document.createElement('meta');
+      meta.setAttribute('name', 'twitter:card');
+      return meta;
+    });
+    twitterCard.setAttribute('content', 'summary_large_image');
+
+    const twitterImage = ensureTag<HTMLMetaElement>('meta[name="twitter:image"]', () => {
+      const meta = document.createElement('meta');
+      meta.setAttribute('name', 'twitter:image');
+      return meta;
+    });
+    twitterImage.setAttribute('content', withSiteUrl('/assets/marlett_hero.png'));
+  }, []);
 
   useEffect(() => {
     const listeners: Array<() => void> = [];
@@ -70,7 +135,12 @@ function App() {
     goToSlide(0);
 
     /* Formulario */
-    const form = document.getElementById('resForm') as HTMLFormElement | null;
+    const formEl = document.getElementById('resForm');
+    if (!(formEl instanceof HTMLFormElement)) {
+      console.warn('Reservation form element not found in DOM.');
+      return;
+    }
+    const form = formEl;
     const previewBtn = document.getElementById('previewBtn');
     const previewEl = document.getElementById('preview');
     const errorPanel = document.getElementById('formError');
@@ -128,20 +198,6 @@ function App() {
         field.classList.remove('error');
       }
       field.classList.toggle('valid', isValid && value !== '');
-    };
-
-    const validateFieldByName = (name: string, value: string | null, message: string) => {
-      const isValid = Boolean((value || '').trim());
-      if (!isValid) {
-        setErrors(prev => ({ ...prev, [name]: message }));
-      } else {
-        setErrors(prev => {
-          const copy = { ...prev };
-          delete copy[name];
-          return copy;
-        });
-      }
-      return isValid;
     };
 
     const validateForm = () => {
