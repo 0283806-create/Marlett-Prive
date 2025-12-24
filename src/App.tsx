@@ -21,6 +21,26 @@ const generateEventId = () => {
 function App() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isShortNotice, setIsShortNotice] = useState(false);
+
+  const checkIfShortNotice = (value: string | null | undefined): boolean => {
+    if (!value) return false;
+    const parts = value.split('-');
+    if (parts.length !== 3) return false;
+    const [yearStr, monthStr, dayStr] = parts;
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+    const day = Number(dayStr);
+    if ([year, month, day].some((num) => Number.isNaN(num))) return false;
+
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const eventDate = new Date(year, month - 1, day);
+    const diffMs = eventDate.getTime() - todayStart.getTime();
+    const diffDays = Math.floor(diffMs / 86_400_000);
+    return diffDays >= 0 && diffDays <= 7;
+  };
+  const SHORT_NOTICE_NOTE = 'AVISO: Evento con menos de 7 días de anticipación.';
 
   useEffect(() => {
     document.title = 'Reservaciones | Marlett Privé';
@@ -349,6 +369,15 @@ function App() {
       // Asegurar que needs_av y media_interest tengan valores válidos
       const needsAVValue = getValue('needs_av') || '';
       const mediaInterestValue = getValue('media_interest') || '';
+      const dateValue = getValue('date');
+      const isShortNoticeNow = checkIfShortNotice(dateValue);
+      setIsShortNotice(isShortNoticeNow);
+      const existingNotes = getValue('notes');
+      const notesWithShortNotice = isShortNoticeNow
+        ? existingNotes
+          ? `${SHORT_NOTICE_NOTE} ${existingNotes}`
+          : SHORT_NOTICE_NOTE
+        : existingNotes;
       
       const eventId = generateEventId();
 
@@ -364,7 +393,7 @@ function App() {
         cantidad_invitados: invitados,
         needs_av: needsAVValue || null,
         media_interest: mediaInterestValue || null,
-        notes: getValue('notes') || null,
+        notes: notesWithShortNotice || null,
         status: 'pending'
       };
 
@@ -405,6 +434,7 @@ function App() {
 
         form.reset();
         setErrors({});
+        setIsShortNotice(false);
       } catch (err) {
         console.error('Error submitting form:', err);
         if (errorPanel) {
@@ -431,6 +461,9 @@ function App() {
       if (target.id === 'phone') {
         target.value = target.value.replace(/[^\d+]/g, '').replace(/\s+/g, '');
       }
+      if (target.id === 'date') {
+        setIsShortNotice(checkIfShortNotice(target.value));
+      }
       if (target.classList.contains('fld')) validateField(target);
     };
 
@@ -441,7 +474,11 @@ function App() {
 
     const handleChange = (event: Event) => {
       const target = event.target as HTMLInputElement | HTMLTextAreaElement | null;
-      if (target && target.classList.contains('fld')) validateField(target);
+      if (!target) return;
+      if (target.id === 'date') {
+        setIsShortNotice(checkIfShortNotice(target.value));
+      }
+      if (target.classList.contains('fld')) validateField(target);
     };
 
     const initChoiceGroups = () => {
@@ -492,6 +529,10 @@ function App() {
 
       setMinDate();
       initChoiceGroups();
+      const dateInput = form.querySelector<HTMLInputElement>('#date');
+      if (dateInput) {
+        setIsShortNotice(checkIfShortNotice(dateInput.value));
+      }
     }
 
     return () => {
@@ -637,6 +678,17 @@ function App() {
                           required
                         />
                         {errors.date && <div className="field-error">{errors.date}</div>}
+                        {isShortNotice && (
+                          <div className="short-notice-alert" role="note">
+                            <p className="short-notice-alert__line">
+                              <span aria-hidden="true" className="short-notice-alert__icon">⚠️</span>
+                              Tu evento está dentro de los próximos 7 días.
+                            </p>
+                            <p className="short-notice-alert__line">
+                              Por cuestiones de tiempo, la disponibilidad deberá revisarse con detalle y podría requerir confirmación especial por parte del equipo Marlett.
+                            </p>
+                          </div>
+                        )}
                       </div>
                       <div className="form-field">
                         <label htmlFor="time">
