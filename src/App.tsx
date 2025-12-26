@@ -43,7 +43,7 @@ function App() {
   const SHORT_NOTICE_NOTE = 'AVISO: Evento con menos de 7 días de anticipación.';
 
   useEffect(() => {
-    document.title = 'Reservaciones | Marlett Privé';
+    document.title = 'Reservaciones | Marlett Prive';
 
     function ensureTag<T extends HTMLElement>(selector: string, createTag: () => T): T {
       const existing = document.head.querySelector<T>(selector);
@@ -72,7 +72,7 @@ function App() {
       meta.setAttribute('property', 'og:title');
       return meta;
     });
-    ogTitleMeta.setAttribute('content', 'Reservaciones | Marlett Privé');
+    ogTitleMeta.setAttribute('content', 'Reservaciones | Marlett Prive');
 
     const ogImageMeta = ensureTag<HTMLMetaElement>('meta[property="og:image"]', () => {
       const meta = document.createElement('meta');
@@ -88,7 +88,7 @@ function App() {
     });
     ogDescriptionMeta.setAttribute(
       'content',
-      'Agenda tu evento privado en Marlett Privé y recibe atención personalizada.'
+      'Agenda tu evento privado en Marlett Prive y recibe atención personalizada.'
     );
 
     const twitterCard = ensureTag<HTMLMetaElement>('meta[name="twitter:card"]', () => {
