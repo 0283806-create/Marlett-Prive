@@ -15,7 +15,7 @@ export default function Hero() {
 
         <div className="hero-card">
           <span className="hero-cardBadge">Eventos especiales</span>
-          <h1 className="hero-cardTitle">Marlett — Altos de Jalisco</h1>
+          <h1 className="hero-cardTitle">Marlett Prive</h1>
           <p className="hero-cardSubtitle">
             Restaurante &amp; Salón de eventos • Zapotlanejo / Guadalajara
           </p>
