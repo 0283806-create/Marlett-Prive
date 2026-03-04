@@ -1,290 +1,236 @@
-# Marlett - Sistema de Reservas de Eventos
+# Reservation System
 
-Una aplicación web **innovadora y visualmente atractiva** para gestionar reservas de eventos de manera eficiente, construida con Next.js, TypeScript y Tailwind CSS.
+A modern, full-featured web application for managing reservations with Supabase and GitHub OAuth integration.
 
-## 🚀 Características
-- Cliente minimalista con listado/detalle y reserva + descarga PDF
-- Panel Admin con tabla, filtros, exportación CSV/XLSX y descarga de PDF
-- Componentes reutilizables: `DownloadPDF`, `ExportData`, `ReservationsTable`
-## 📦 Esquema de Base de Datos (Supabase)
+## Features
 
-Tablas sugeridas:
-- `clientes` (id UUID PK, nombre, email, telefono, created_at, updated_at)
-- `eventos` (id UUID PK, nombre, fecha, lugar, descripcion, created_at, updated_at)
-- `reservas` (id UUID PK, cliente_id FK -> clientes.id, evento_id FK -> eventos.id, estado, invitados, total, created_at, updated_at)
+- 🔐 **GitHub OAuth Authentication** - Sign in with your GitHub account
+- 📅 **Reservation Management** - Create, view, and delete reservations
+- 👥 **Guest Management** - Track number of guests for each reservation
+- 📝 **Notes & Special Requests** - Add custom notes to reservations
+- 🎨 **Modern UI** - Beautiful, responsive design
+- 🚀 **Real-time Updates** - Instant feedback with toast notifications
+- 📱 **Mobile Responsive** - Works seamlessly on all devices
 
-Consulta recomendada para joins (pseudo):
-`select reservas.*, clientes(name,email,phone), eventos(nombre,fecha,lugar) from reservas`.
+## Tech Stack
 
-SQL (referencia) para Supabase:
+- **Frontend**: HTML, CSS, JavaScript (Vanilla)
+- **Backend**: Supabase (Database + Authentication)
+- **Authentication**: GitHub OAuth via Supabase Auth
+- **Build Tool**: Vite
+
+## Prerequisites
+
+Before you begin, ensure you have the following:
+
+- Node.js (v16 or higher)
+- npm or yarn
+- A Supabase account ([sign up here](https://supabase.com))
+- A GitHub account for OAuth
+
+## Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repo-url>
+cd Reservaciones
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Set Up Supabase
+
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to **Project Settings** > **API** to get your credentials
+3. Copy `URL` and `anon public` key
+
+### 4. Configure GitHub OAuth
+
+1. Go to GitHub Settings > Developer settings > OAuth Apps
+2. Click **New OAuth App**
+3. Fill in the details:
+   - **Application name**: Reservation System (or your choice)
+   - **Homepage URL**: Your deployed URL or `http://localhost:5173`
+   - **Authorization callback URL**: `https://YOUR_PROJECT_ID.supabase.co/auth/v1/callback`
+4. Copy the **Client ID** and **Client Secret**
+
+### 5. Configure Supabase Auth
+
+1. In your Supabase dashboard, go to **Authentication** > **Providers**
+2. Enable **GitHub** provider
+3. Enter your GitHub **Client ID** and **Client Secret**
+4. Save the configuration
+
+### 6. Create Database Table
+
+Run this SQL in your Supabase SQL Editor:
+
 ```sql
-create table if not exists clientes (
-  id uuid primary key default gen_random_uuid(),
-  nombre text not null,
-  correo text not null,
-  telefono text,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
+-- Create reservations table
+CREATE TABLE IF NOT EXISTS reservations (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  date DATE NOT NULL,
+  time TIME NOT NULL,
+  guests INTEGER NOT NULL CHECK (guests > 0),
+  notes TEXT,
+  status TEXT DEFAULT 'upcoming',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-create table if not exists eventos (
-  id uuid primary key default gen_random_uuid(),
-  nombre text not null,
-  fecha date not null,
-  lugar text not null,
-  descripcion text,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-);
+-- Create index for better query performance
+CREATE INDEX IF NOT EXISTS idx_reservations_user_id ON reservations(user_id);
+CREATE INDEX IF NOT EXISTS idx_reservations_date ON reservations(date);
 
-create table if not exists reservas (
-  id uuid primary key default gen_random_uuid(),
-  cliente_id uuid references clientes(id) on delete cascade,
-  evento_id uuid references eventos(id) on delete cascade,
-  fecha_reserva timestamptz default now(),
-  estado text check (estado in ('pending','confirmed','cancelled','in-progress','completed')) default 'pending',
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-);
+-- Enable Row Level Security
+ALTER TABLE reservations ENABLE ROW LEVEL SECURITY;
+
+-- Create policy: Users can only see their own reservations
+CREATE POLICY "Users can view own reservations"
+  ON reservations
+  FOR SELECT
+  USING (auth.uid() = user_id);
+
+-- Create policy: Users can only create their own reservations
+CREATE POLICY "Users can create own reservations"
+  ON reservations
+  FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+-- Create policy: Users can only delete their own reservations
+CREATE POLICY "Users can delete own reservations"
+  ON reservations
+  FOR DELETE
+  USING (auth.uid() = user_id);
+
+-- Create updated_at trigger
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_reservations_updated_at
+  BEFORE UPDATE ON reservations
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
 ```
 
+### 7. Configure Environment Variables
 
-### ✅ Funcionalidades Principales
-- [x] **Sistema de precios por hora: $3,000 MX/hora para todos los eventos**
-- [x] **Selección de fechas con calendario integrado y vista de reservas por día**
-- [x] **Almacenamiento automático de reservas con persistencia de datos**
-- [x] **Opción de eventos anónimos para proteger la privacidad del cliente**
-- [x] **4 Salones configurables de 80 personas cada uno**
-- [x] **Sistema de combinación de salones (1-4 salones = 80-400 personas)**
-- [x] **Calculadora de precios en tiempo real con desglose detallado**
-- [x] **Tipos de eventos personalizables - agregar eventos no mencionados**
-- [x] Sistema de reservas para diferentes tipos de eventos
-- [x] Gestión completa de reservas (crear, editar, eliminar)
-- [x] Estados de reserva (Confirmado, Pendiente, Cancelado)
-- [x] Búsqueda y filtrado por fecha y texto
-- [x] **Interfaz moderna con Glassmorphism y efectos visuales avanzados**
+Update the `app.js` file with your Supabase credentials:
 
-### ✅ Tipos de Eventos Disponibles
-- **Boda y Celebración**: $45/persona + $3,000 MX/hora (4-12 horas)
-- **Evento Corporativo**: $35/persona + $3,000 MX/hora (2-8 horas)
-- **Cena de Gala**: $60/persona + $3,000 MX/hora (3-8 horas)
-- **Evento Privado**: $40/persona + $3,000 MX/hora (2-10 horas)
-- **Cumpleaños**: $30/persona + $3,000 MX/hora (3-8 horas)
-- **Aniversario**: $35/persona + $3,000 MX/hora (3-8 horas)
-- **Eventos Personalizados**: $40/persona + $3,000 MX/hora (2-10 horas)
-
-### 🏢 **Sistema de Salones Inteligente**
-- **4 Salones Base**: 80 personas cada uno
-- **Combinación Flexible**:
-  - 1 Salón: Hasta 80 personas
-  - 2 Salones: Hasta 200 personas
-  - 3 Salones: Hasta 350 personas
-  - 4 Salones: Hasta 400 personas
-- **Descuento por Combinación**: 20% al fusionar salones
-
-### 💰 **Sistema de Precios Transparente**
-- **Tarifa Fija**: $3,000 MX por hora para todos los eventos
-- **Precio Base**: Varía según el tipo de evento (por persona)
-- **Costos Adicionales**:
-  - Salones: $600-$900 por salón
-  - Catering: $15 por persona
-  - Decoración: $8 por persona
-  - Audio/Visual: $5 por persona
-  - Setup Especial: $200 (cuando aplique)
-- **Calculadora en Tiempo Real**: Ve el precio total mientras llenas el formulario
-
-### ✨ **Nuevo Diseño Innovador**
-- **Header Glassmorphism**: Efectos de transparencia y desenfoque modernos
-- **Gradientes Animados**: Colores vibrantes y transiciones suaves
-- **Tarjetas Interactivas**: Efectos hover y animaciones de escala
-- **Estadísticas Visuales**: Dashboard con métricas en tiempo real
-- **Iconografía Moderna**: Iconos Lucide con efectos visuales
-- **Responsive Design**: Adaptable a todos los dispositivos
-
-## 🎨 **Paleta de Colores Moderna**
-- **Azules y Púrpuras**: Gradientes del header y elementos principales
-- **Verdes y Esmeraldas**: Estados confirmados y elementos de éxito
-- **Ámbar y Naranjas**: Estados pendientes y elementos de advertencia
-- **Blancos Transparentes**: Efectos glassmorphism y tarjetas
-- **Grises Suaves**: Textos y elementos secundarios
-
-## 🛠️ Tecnologías Utilizadas
-
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **Estilos**: Tailwind CSS, CSS Modules
-- **Componentes**: shadcn/ui, Lucide React Icons
-- **Efectos**: Glassmorphism, Gradientes, Animaciones CSS
-- **Responsive**: Mobile-first design
-
-## 📱 Características del Diseño
-
-### **Glassmorphism y Transparencias**
-- Efectos de desenfoque (backdrop-blur)
-- Bordes semi-transparentes
-- Sombras suaves y elegantes
-
-### **Animaciones y Transiciones**
-- Hover effects con escala y sombras
-- Transiciones suaves en todos los elementos
-- Animaciones de carga y estados
-
-### **Gradientes y Colores**
-- Gradientes lineales y radiales
-- Paleta de colores moderna y vibrante
-- Contrastes optimizados para accesibilidad
-
-## 🚀 Instalación
-
-1. **Clonar el repositorio**:
-   ```bash
-   git clone <repository-url>
-   cd marlett-reservations
-   ```
-
-2. **Instalar dependencias**:
-   ```bash
-   npm install
-   ```
-
-3. **Ejecutar en desarrollo**:
-   ```bash
-   npm run dev
-   ```
-
-4. **Abrir en el navegador**:
-   ```
-   http://localhost:3000
-   ```
-
-## 📁 Estructura del Proyecto
-
-```
-src/
-├── app/
-│   ├── globals.css          # Estilos globales y efectos
-│   ├── layout.tsx           # Layout principal con metadatos
-│   └── page.tsx             # Página principal de Marlett
-├── components/
-│   └── ui/                  # Componentes shadcn/ui
-│       ├── button.tsx       # Botones con efectos modernos
-│       ├── card.tsx         # Tarjetas glassmorphism
-│       ├── input.tsx        # Campos de entrada estilizados
-│       └── badge.tsx        # Badges con gradientes
-└── lib/
-    └── utils.ts             # Utilidades y helpers
+```javascript
+const supabaseUrl = 'YOUR_SUPABASE_URL';
+const supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
 ```
 
-## 🎯 Funcionalidades Destacadas
+Replace:
+- `YOUR_SUPABASE_URL` with your Supabase project URL
+- `YOUR_SUPABASE_ANON_KEY` with your Supabase anon public key
 
-### **Dashboard de Estadísticas**
-- Contador de reservas activas
-- Reservas confirmadas vs pendientes
-- Tipos de eventos disponibles
-- Métricas en tiempo real
+### 8. Run the Application
 
-### **Sistema de Reservas**
-- Formulario intuitivo y moderno
-- Selección visual de tipos de evento
-- Validación en tiempo real
-- Estados visuales claros
-
-### **Gestión de Reservas**
-- Vista de tarjetas elegantes
-- Acciones rápidas (editar/eliminar)
-- Información detallada de cada evento
-- Filtros y búsqueda avanzada
-
-## 🌟 **Innovaciones del Diseño**
-
-### **Efectos Visuales Avanzados**
-- **Glassmorphism**: Efectos de cristal y transparencia
-- **Gradientes Animados**: Colores que fluyen naturalmente
-- **Sombras Dinámicas**: Profundidad y dimensión
-- **Transiciones Suaves**: Movimientos fluidos y elegantes
-
-### **Experiencia de Usuario**
-- **Interacciones Intuitivas**: Feedback visual inmediato
-- **Navegación Clara**: Estructura lógica y organizada
-- **Accesibilidad**: Contraste y legibilidad optimizados
-- **Responsive**: Adaptable a todos los dispositivos
-
-## 🔧 Personalización
-
-### **Colores y Temas**
-- Paleta de colores personalizable
-- Gradientes ajustables
-- Efectos de transparencia configurables
-
-### **Componentes**
-- Sistema de componentes modular
-- Estilos CSS reutilizables
-- Configuración de Tailwind personalizada
-
-## 📱 Responsive Design
-
-- **Mobile First**: Diseño optimizado para móviles
-- **Tablet**: Adaptación para pantallas medianas
-- **Desktop**: Experiencia completa en pantallas grandes
-- **Touch Friendly**: Interacciones táctiles optimizadas
-
-## 🚀 Despliegue
-
-### **Vercel (Recomendado)**
 ```bash
-npm run build
-vercel --prod
+npm run dev
 ```
 
-### **Netlify**
-```bash
-npm run build
-# Subir carpeta .next a Netlify
+The application will be available at `http://localhost:5173`
+
+## Deployment
+
+### Deploy with Vercel
+
+1. Push your code to GitHub
+2. Go to [Vercel](https://vercel.com) and import your repository
+3. Vercel will automatically detect and deploy your app
+4. Update your GitHub OAuth callback URL to your Vercel URL
+
+### Deploy with Netlify
+
+1. Build your project: `npm run build`
+2. Push your code to GitHub
+3. Go to [Netlify](https://netlify.com) and import your repository
+4. Set build command: `npm run build`
+5. Set publish directory: `dist`
+6. Update your GitHub OAuth callback URL to your Netlify URL
+
+## Project Structure
+
+```
+Reservaciones/
+├── index.html          # Main HTML file
+├── styles.css          # CSS styling
+├── app.js              # Main JavaScript application
+├── package.json        # Dependencies and scripts
+├── README.md           # This file
+└── .gitignore          # Git ignore file
 ```
 
-### **Docker**
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-RUN npm run build
-EXPOSE 3000
-CMD ["npm", "start"]
-```
+## Usage
 
-## 🤝 Contribución
+1. **Sign In**: Click "Sign in with GitHub" and authorize the application
+2. **Create Reservation**: Fill in the form with reservation details
+3. **View Reservations**: See all your reservations in the list
+4. **Filter Reservations**: Use the dropdown to filter by status
+5. **Delete Reservation**: Click the delete button to remove a reservation
 
-1. Fork del proyecto
-2. Crear rama feature (`git checkout -b feature/AmazingFeature`)
-3. Commit cambios (`git commit -m 'Add AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abrir Pull Request
+## Security
 
-## 📄 Licencia
+- All reservations are secured with Row Level Security (RLS)
+- Users can only access their own reservations
+- GitHub OAuth provides secure authentication
+- All data is encrypted in transit via HTTPS
 
-Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
+## Troubleshooting
 
-## 🎉 **Características Destacadas del Nuevo Diseño**
+### GitHub OAuth not working
 
-### **Innovación Visual**
-- **Glassmorphism**: Efectos de cristal modernos
-- **Gradientes Dinámicos**: Colores que fluyen naturalmente
-- **Animaciones Suaves**: Transiciones elegantes y fluidas
-- **Efectos de Profundidad**: Sombras y capas visuales
+- Verify your callback URL is correct in GitHub OAuth app settings
+- Ensure your callback URL matches exactly: `https://YOUR_PROJECT_ID.supabase.co/auth/v1/callback`
+- Check that GitHub provider is enabled in Supabase Auth settings
 
-### **Experiencia Moderna**
-- **Dashboard Interactivo**: Métricas en tiempo real
-- **Tarjetas Animadas**: Efectos hover y selección
-- **Formularios Inteligentes**: Validación y feedback visual
-- **Navegación Intuitiva**: Flujo de usuario optimizado
+### Can't see reservations
 
-### **Tecnología de Vanguardia**
-- **Next.js 14**: Framework más reciente
-- **Tailwind CSS**: Utilidades CSS modernas
-- **TypeScript**: Tipado estático robusto
-- **Componentes Reutilizables**: Arquitectura modular
+- Verify RLS policies are created correctly
+- Check browser console for errors
+- Ensure you're signed in with GitHub
 
----
+### Database errors
 
-**Marlett** - Transformando la gestión de eventos con diseño innovador y tecnología de vanguardia. ✨
+- Verify the `reservations` table exists
+- Check that all columns are created correctly
+- Ensure your Supabase credentials are correct in `app.js`
+
+## Dominios y redirecciones (Vercel)
+
+1. En Vercel, abre tu proyecto `salon_de_eventos_marlett`.
+2. Ve a **Settings → Domains** y haz clic en **Add Domain**.
+3. Ingresa tu dominio principal (por ejemplo, `marlettprive.mx`) y confírmalo.
+4. Cuando esté verificado, selecciónalo y elige **Set as Primary** para el entorno **Production**.
+5. Agrega el dominio anterior (por ejemplo, `eventosmarlett.mx`) y en las acciones selecciona **Redirect to another domain**.
+6. Configura el redireccionamiento como **301 Permanent** hacia el dominio principal nuevo.
+7. Actualiza los registros DNS en tu proveedor para apuntar a los registros proporcionados por Vercel.
+8. Añade o actualiza la variable `VITE_SITE_URL` en **Settings → Environment Variables** (Production y Preview) con la URL canónica, por ejemplo `https://marlettprive.mx`.
+
+## Contributing
+
+Feel free to submit issues and enhancement requests!
+
+## License
+
+MIT License - feel free to use this project for your own purposes.
+
+## Support
+
+If you encounter any issues, please check the troubleshooting section or open an issue on GitHub.
+
