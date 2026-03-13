@@ -3,15 +3,24 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl) {
-  throw new Error('Missing VITE_SUPABASE_URL. Configure it in your .env.local and Vercel project settings.');
-}
+const missingEnvVars = [
+  !supabaseUrl ? 'VITE_SUPABASE_URL' : null,
+  !supabaseAnonKey ? 'VITE_SUPABASE_ANON_KEY' : null
+].filter(Boolean) as string[];
 
-if (!supabaseAnonKey) {
-  throw new Error('Missing VITE_SUPABASE_ANON_KEY. Configure it in your .env.local and Vercel project settings.');
-}
+export const SUPABASE_CONFIG_ERROR =
+  missingEnvVars.length > 0
+    ? `Missing ${missingEnvVars.join(', ')}. Configure them in Vercel project settings.`
+    : null;
 
-export const SUPABASE_URL = supabaseUrl;
-export const SUPABASE_ANON_KEY = supabaseAnonKey;
+// Keep client creation resilient in runtime; submit flow handles missing env with controlled errors.
+export const SUPABASE_URL = supabaseUrl ?? 'https://invalid.supabase.co';
+export const SUPABASE_ANON_KEY = supabaseAnonKey ?? 'invalid-anon-key';
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false
+  }
+});

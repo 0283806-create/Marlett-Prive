@@ -214,7 +214,7 @@ export const defaultEventTypes: EventTypeConfig[] = [
 export const defaultDespechosEvents: DespechosEventConfig[] = [
   {
     id: 'despecho-visita-corta',
-    name: 'Visita Corta - Desahogo Rápido',
+    name: 'Visita Corta - Desahogo Breve',
     description: 'Perfecto para una o dos bebidas y cantar un par de canciones',
     isActive: true,
     maxCapacity: 8,

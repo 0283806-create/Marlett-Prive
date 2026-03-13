@@ -381,7 +381,7 @@ export default function AdminPage() {
                     variant="outline"
                     className="flex-1"
                   >
-                    Hoy
+                    Fecha actual
                   </Button>
                 </div>
               </div>

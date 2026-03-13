@@ -1819,7 +1819,7 @@ export default function MarlettReservations() {
                       onClick={() => setSearchQuery(new Date().toLocaleDateString('es-ES'))}
                       className="text-xs"
                     >
-                      Solo Hoy
+                      Fecha actual
                     </Button>
                   </div>
                 </div>

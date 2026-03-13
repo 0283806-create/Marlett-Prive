@@ -683,7 +683,7 @@ export default function MarlettDespechosPage() {
                           required
                         >
                           <option value="">Selecciona duración</option>
-                          <option value="0.5">30 minutos - Desahogo rápido</option>
+                          <option value="0.5">30 minutos - Desahogo breve</option>
                           <option value="1">1 hora - Visita corta</option>
                           <option value="1.5">1.5 horas - Promedio</option>
                           <option value="2">2 horas - Promedio</option>
