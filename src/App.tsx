@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import Footer from './components/Footer';
-import Hero from './components/Hero.backup';
+import Hero from './components/Hero';
 import RequestForm from './components/form/RequestForm';
 import WhyMarlett from './components/WhyMarlett';
 import Gallery from './components/Gallery';
