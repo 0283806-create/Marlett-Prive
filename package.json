@@ -21,6 +21,7 @@
     "vite": "^5.0.0"
   },
   "devDependencies": {
+    "dotenv-cli": "^11.0.0",
     "vercel": "^48.9.2"
   },
   "type": "module",
