@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { logError, maskPhone } from '../../lib/logger';
@@ -71,15 +71,6 @@ export default function RequestForm() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [honeypot, setHoneypot] = useState('');
   const lastSubmitAtRef = useRef(0);
-
-  const summary = useMemo(() => {
-    return {
-      date: form.dateFlex ? 'Por definir' : (form.date || 'Por definir'),
-      guests: form.guests || 'Por definir',
-      type: form.eventType || 'Por definir',
-      contact: form.phone || 'Por definir'
-    };
-  }, [form]);
 
   const setField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -393,14 +384,15 @@ export default function RequestForm() {
         </form>
       </div>
 
-      <aside className="request-right">
-        <div className="summary-card summary-card-desktop">
-          <h3>Resumen</h3>
-          <div className="summary-row"><span>Fecha</span><strong>{summary.date}</strong></div>
-          <div className="summary-row"><span>Invitados</span><strong>{summary.guests}</strong></div>
-          <div className="summary-row"><span>Tipo</span><strong>{summary.type}</strong></div>
-          <div className="summary-row"><span>Contacto</span><strong>{summary.contact}</strong></div>
-          <small className="summary-note">Usaremos tu información solo para dar seguimiento.</small>
+      <aside className="request-right" style={{ background: 'transparent', border: 'none', boxShadow: 'none', padding: 0 }}>
+        <div style={{ position: 'relative', width: '100%', height: '90vh' }}>
+          <img src="/ticketreservacion.svg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
+          <svg viewBox="0 0 810 1012.5" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+            <text x="420" y="463" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.dateFlex ? 'Por definir' : (form.date || 'Por definir')}</text>
+            <text x="420" y="532" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.guests || 'Por definir'}</text>
+            <text x="390" y="610" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.eventType || 'Por definir'}</text>
+            <text x="420" y="688" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.phone || 'Por definir'}</text>
+          </svg>
         </div>
       </aside>
 
