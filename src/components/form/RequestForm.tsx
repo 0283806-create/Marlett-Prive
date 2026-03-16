@@ -69,6 +69,7 @@ export default function RequestForm() {
   const [submitError, setSubmitError] = useState('');
   const [submitErrorDev, setSubmitErrorDev] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [honeypot, setHoneypot] = useState('');
   const lastSubmitAtRef = useRef(0);
 
@@ -120,12 +121,14 @@ export default function RequestForm() {
 
     setSubmitError('');
     setSubmitErrorDev('');
+    setShowError(false);
 
     if (SUPABASE_CONFIG_ERROR) {
       const configErrorId = logError('request-submit-config', new Error(SUPABASE_CONFIG_ERROR), {
         table: REQUESTS_TABLE
       });
       setSubmitError(`No pudimos guardar tu solicitud. Intenta de nuevo. ID: ${configErrorId}`);
+      setShowError(true);
       if (import.meta.env.DEV) {
         setSubmitErrorDev(SUPABASE_CONFIG_ERROR);
       }
@@ -137,12 +140,14 @@ export default function RequestForm() {
         table: REQUESTS_TABLE
       });
       setSubmitError(`No pudimos guardar tu solicitud. Intenta de nuevo. ID: ${spamErrorId}`);
+      setShowError(true);
       return;
     }
 
     const now = Date.now();
     if (now - lastSubmitAtRef.current < SUBMIT_COOLDOWN_MS) {
       setSubmitError('Espera unos segundos antes de intentar nuevamente.');
+      setShowError(true);
       return;
     }
 
@@ -225,6 +230,7 @@ export default function RequestForm() {
       } else {
         setSubmitError(`No pudimos guardar tu solicitud. Intenta de nuevo. ID: ${errorId}`);
       }
+      setShowError(true);
 
       if (import.meta.env.DEV) {
         setSubmitErrorDev(`${errorMessage} (ID: ${errorId})`);
@@ -374,7 +380,12 @@ export default function RequestForm() {
                 >
                   Datos principales
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={isSubmitting}
+                  style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                >
                   {isSubmitting ? 'Enviando...' : 'Enviar solicitud'}
                 </button>
               </div>
@@ -390,8 +401,8 @@ export default function RequestForm() {
           <svg viewBox="0 0 810 1012.5" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
             <text x="420" y="463" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.dateFlex ? 'Por definir' : (form.date || 'Por definir')}</text>
             <text x="420" y="532" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.guests || 'Por definir'}</text>
-            <text x="390" y="610" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.eventType || 'Por definir'}</text>
-            <text x="420" y="688" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.phone || 'Por definir'}</text>
+            <text x="390" y="600" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.eventType || 'Por definir'}</text>
+            <text x="420" y="678" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.phone || 'Por definir'}</text>
           </svg>
         </div>
       </aside>
@@ -425,10 +436,10 @@ export default function RequestForm() {
               }}
             >
               <motion.div
-                initial={{ scale: 0.92, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.92, opacity: 0 }}
-                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.92 }}
+                transition={{ duration: 0.4 }}
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -448,11 +459,10 @@ export default function RequestForm() {
                     width: 72,
                     height: 72,
                     borderRadius: '50%',
-                    background: '#2f8f5e',
+                    background: 'rgba(47, 143, 94, 0.15)',
                     border: '2px solid rgba(47, 143, 94, 0.4)',
-                    color: '#fff',
-                    fontSize: 36,
-                    fontWeight: 700,
+                    fontSize: 32,
+                    color: '#2f8f5e',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -464,24 +474,24 @@ export default function RequestForm() {
                 <h2
                   id="success-modal-title"
                   style={{
-                    margin: '24px 0 0',
                     fontFamily: "'Playfair Display', serif",
-                    fontSize: '2rem',
                     color: '#c9a84c',
-                    fontWeight: 600,
+                    fontSize: '2rem',
+                    marginTop: 24,
+                    marginBottom: 0,
                   }}
                 >
-                  ¡Solicitud enviada!
+                  ¡Solicitud recibida!
                 </h2>
                 <p
                   style={{
-                    margin: '12px 0 0',
                     color: 'rgba(241, 245, 240, 0.8)',
                     fontSize: '1rem',
+                    marginTop: 12,
                     lineHeight: 1.6,
                   }}
                 >
-                  Nos contactaremos contigo pronto para confirmar disponibilidad.
+                  Nos pondremos en contacto contigo pronto para confirmar disponibilidad y compartirte una propuesta.
                 </p>
                 <button
                   type="button"
@@ -492,14 +502,13 @@ export default function RequestForm() {
                     setErrors({});
                   }}
                   style={{
-                    marginTop: 32,
-                    padding: '12px 28px',
-                    borderRadius: 9999,
-                    border: 'none',
                     background: 'linear-gradient(180deg, #3ca671 0%, #2f8f5e 100%)',
                     color: '#fff',
+                    borderRadius: 9999,
+                    padding: '12px 36px',
                     fontWeight: 600,
-                    fontSize: '1rem',
+                    marginTop: 32,
+                    border: 'none',
                     cursor: 'pointer',
                   }}
                 >
@@ -515,7 +524,7 @@ export default function RequestForm() {
       {/* Banner error fijo abajo */}
       {createPortal(
         <AnimatePresence>
-          {submitError && (
+          {showError && submitError && (
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -540,11 +549,14 @@ export default function RequestForm() {
               role="alert"
             >
               <span style={{ color: '#f87171', fontSize: '0.9375rem', lineHeight: 1.4 }}>
-                ⚠ No pudimos enviar tu solicitud. Intenta de nuevo.
+                ⚠ No pudimos enviar tu solicitud. Intenta de nuevo o contáctanos por WhatsApp.
               </span>
               <button
                 type="button"
-                onClick={() => setSubmitError('')}
+                onClick={() => {
+                  setShowError(false);
+                  setSubmitError('');
+                }}
                 aria-label="Cerrar"
                 style={{
                   background: 'transparent',
