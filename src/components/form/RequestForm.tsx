@@ -1,4 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { logError, maskPhone } from '../../lib/logger';
 import { SUPABASE_CONFIG_ERROR, supabase } from '../../lib/supabaseClient';
 import { formatPhoneInput, normalizeMxToE164, validateMainStep } from '../../lib/validation';
@@ -66,6 +68,7 @@ export default function RequestForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [submitErrorDev, setSubmitErrorDev] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [honeypot, setHoneypot] = useState('');
   const lastSubmitAtRef = useRef(0);
 
@@ -216,6 +219,7 @@ export default function RequestForm() {
       setHoneypot('');
       setSubmitError('');
       setSubmitErrorDev('');
+      setShowSuccessModal(true);
     } catch (error) {
       const errorMessage = getErrorMessage(error);
       const errorId = logError('request-submit', error, {
@@ -370,7 +374,6 @@ export default function RequestForm() {
                 <textarea className="fld note-text" rows={4} value={form.notes} onChange={(e) => setField('notes', e.target.value)} />
               </label>
 
-              {submitError && <div className="form-error show">{submitError}</div>}
               <div className="actions">
                 <button
                   type="button"
@@ -400,6 +403,174 @@ export default function RequestForm() {
           <small className="summary-note">Usaremos tu información solo para dar seguimiento.</small>
         </div>
       </aside>
+
+      {/* Modal éxito */}
+      {createPortal(
+        <AnimatePresence>
+          {showSuccessModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 9999,
+                background: 'rgba(6, 10, 8, 0.88)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 24,
+              }}
+              onClick={() => {
+                setShowSuccessModal(false);
+                setForm(INITIAL_FORM);
+                setStep(1);
+                setErrors({});
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0.92, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.92, opacity: 0 }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="success-modal-title"
+                style={{
+                  background: 'linear-gradient(180deg, #121814 0%, #0e1210 100%)',
+                  border: '1px solid rgba(201, 168, 76, 0.35)',
+                  borderRadius: 28,
+                  padding: '56px 48px',
+                  maxWidth: 480,
+                  width: '90%',
+                  textAlign: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    width: 72,
+                    height: 72,
+                    borderRadius: '50%',
+                    background: '#2f8f5e',
+                    border: '2px solid rgba(47, 143, 94, 0.4)',
+                    color: '#fff',
+                    fontSize: 36,
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto',
+                  }}
+                >
+                  ✓
+                </div>
+                <h2
+                  id="success-modal-title"
+                  style={{
+                    margin: '24px 0 0',
+                    fontFamily: "'Playfair Display', serif",
+                    fontSize: '2rem',
+                    color: '#c9a84c',
+                    fontWeight: 600,
+                  }}
+                >
+                  ¡Solicitud enviada!
+                </h2>
+                <p
+                  style={{
+                    margin: '12px 0 0',
+                    color: 'rgba(241, 245, 240, 0.8)',
+                    fontSize: '1rem',
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Nos contactaremos contigo pronto para confirmar disponibilidad.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    setForm(INITIAL_FORM);
+                    setStep(1);
+                    setErrors({});
+                  }}
+                  style={{
+                    marginTop: 32,
+                    padding: '12px 28px',
+                    borderRadius: 9999,
+                    border: 'none',
+                    background: 'linear-gradient(180deg, #3ca671 0%, #2f8f5e 100%)',
+                    color: '#fff',
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cerrar
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+
+      {/* Banner error fijo abajo */}
+      {createPortal(
+        <AnimatePresence>
+          {submitError && (
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 24 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                position: 'fixed',
+                bottom: 24,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: 'rgba(30, 10, 10, 0.95)',
+                border: '1px solid rgba(220, 80, 80, 0.5)',
+                borderRadius: 14,
+                padding: '16px 24px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
+                maxWidth: 'calc(100vw - 48px)',
+                zIndex: 10000,
+                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+              }}
+              role="alert"
+            >
+              <span style={{ color: '#f87171', fontSize: '0.9375rem', lineHeight: 1.4 }}>
+                ⚠ No pudimos enviar tu solicitud. Intenta de nuevo.
+              </span>
+              <button
+                type="button"
+                onClick={() => setSubmitError('')}
+                aria-label="Cerrar"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#f87171',
+                  fontSize: '1.25rem',
+                  cursor: 'pointer',
+                  padding: '0 4px',
+                  lineHeight: 1,
+                }}
+              >
+                ×
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }

@@ -1,24 +1,25 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import MarlettPriveLabel from './MarlettPriveLabel';
 
 const reasons = [
   {
-    number: '01',
+    number: '1',
     title: 'Atención personalizada',
     body: 'Cada evento tiene un coordinador dedicado que entiende tu visión y la ejecuta sin que tengas que preocuparte por los detalles.',
   },
   {
-    number: '02',
+    number: '2',
     title: 'Espacio premium',
     body: 'Salón de eventos diseñado para celebraciones íntimas y corporativas, con capacidad para hasta 200 invitados en un ambiente único.',
   },
   {
-    number: '03',
+    number: '3',
     title: 'Cocina de autor',
     body: 'El mismo estándar gastronómico de Marlett — cortes, pastas frescas y cócteles únicos — llevado a tu evento privado.',
   },
   {
-    number: '04',
+    number: '4',
     title: 'Ubicación privilegiada',
     body: 'En el corazón de Zapotlanejo, Jalisco. A 30 minutos de Guadalajara, con acceso fácil y estacionamiento para tus invitados.',
   },
@@ -94,7 +95,7 @@ export default function WhyMarlett() {
               color: '#f8f6f0',
             }}
           >
-            Marlett Privé es más<br />
+            <MarlettPriveLabel /> es más<br />
             <em style={{ fontStyle: 'italic', color: 'var(--accent-champagne)' }}>
               que un espacio
             </em>
@@ -142,7 +143,7 @@ export default function WhyMarlett() {
                   fontSize: '3rem',
                   fontWeight: 600,
                   lineHeight: 1,
-                  color: 'rgba(201, 184, 150, 0.15)',
+                  color: '#c9a84c',
                   letterSpacing: '-0.04em',
                   userSelect: 'none',
                 }}

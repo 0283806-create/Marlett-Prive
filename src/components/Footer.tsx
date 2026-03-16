@@ -1,3 +1,5 @@
+import MarlettPriveLabel from './MarlettPriveLabel';
+
 export default function Footer() {
   return (
     <footer className="footer" aria-label="Footer Marlett">
@@ -6,7 +8,7 @@ export default function Footer() {
           <div className="footer-brand">
             <img src="/assets/Marlett_high_contrast.jpg" alt="Marlett logo" className="footer-logo" />
             <p className="footer-copy">
-              Marlett Prive es un espacio para celebraciones y experiencias privadas, con atencion
+              <MarlettPriveLabel /> es un espacio para celebraciones y experiencias privadas, con atención
               personalizada y detalles pensados para cada evento.
             </p>
           </div>
@@ -21,7 +23,7 @@ export default function Footer() {
         <div className="footer-divider" />
 
         <div className="footer-bottom">
-          <p className="footer-legal">© 2026 Marlett | Marlett Prive</p>
+          <p className="footer-legal">© 2026 Marlett | <MarlettPriveLabel /></p>
 
           <div className="footer-socials" aria-label="Redes sociales">
             <a

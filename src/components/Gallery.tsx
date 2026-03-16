@@ -1,33 +1,21 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
+import MarlettPriveLabel from './MarlettPriveLabel';
 
-// Categorías de eventos — reemplaza los src con tus imágenes reales
 const EVENTS = [
-  { id: 1, label: 'Bodas', tag: 'boda', src: '/assets/fachada-marlett.jpeg', caption: 'Boda íntima · 80 invitados' },
-  { id: 2, label: 'XV Años', tag: 'xv', src: '/assets/marlett_hero.png', caption: 'XV años · salón completo' },
-  { id: 3, label: 'Corporativo', tag: 'corp', src: '/assets/fachada-marlett.jpeg', caption: 'Cena corporativa · 50 personas' },
-  { id: 4, label: 'Cumpleaños', tag: 'cumple', src: '/assets/marlett_hero.png', caption: 'Cumpleaños VIP · terraza' },
-  { id: 5, label: 'Bodas', tag: 'boda', src: '/assets/marlett_hero.png', caption: 'Recepción · jardín exterior' },
-  { id: 6, label: 'Corporativo', tag: 'corp', src: '/assets/fachada-marlett.jpeg', caption: 'Lanzamiento de producto · 120 invitados' },
+  { id: 1, label: 'Salón principal', tag: 'todos', src: '/images1.1/IMG_7430.jpeg', caption: 'Salón principal · hasta 200 invitados' },
+  { id: 2, label: 'Área lounge', tag: 'bodas', src: '/images1.1/IMG_7034.jpeg', caption: 'Área lounge · ambiente íntimo' },
+  { id: 3, label: 'Salón con arcos', tag: 'corporativo', src: '/assets/IMG_7434.jpg', caption: 'Salón con arcos · iluminación premium' },
+  { id: 4, label: 'Salón amplio', tag: 'xv', src: '/images1.1/IMG_7435.jpeg', caption: 'Salón amplio · eventos grandes' },
+  { id: 5, label: 'Lobby principal', tag: 'todos', src: '/assets/IMG_7431.jpg', caption: 'Lobby · recepción de invitados' },
+  { id: 6, label: 'Escaleras', tag: 'cumple', src: '/assets/IMG_7432.jpg', caption: 'Acceso · diseño arquitectónico' },
+  { id: 7, label: 'Restaurante', tag: 'todos', src: '/images1.1/4b02c8d9-4942-4c81-b327-80caacc90722.jpeg', caption: 'Restaurante Marlett · gastronomía' },
+  { id: 8, label: 'Lámpara central', tag: 'bodas', src: '/images1.1/IMG_7427.jpeg', caption: 'Detalle · iluminación artística' },
 ];
-
-const TAGS = ['Todos', 'Bodas', 'XV Años', 'Corporativo', 'Cumpleaños'];
-const TAG_MAP: Record<string, string> = {
-  'Todos': 'all',
-  'Bodas': 'boda',
-  'XV Años': 'xv',
-  'Corporativo': 'corp',
-  'Cumpleaños': 'cumple',
-};
 
 export default function Gallery() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-60px' });
-  const [active, setActive] = useState('Todos');
-
-  const filtered = active === 'Todos'
-    ? EVENTS
-    : EVENTS.filter((e) => e.tag === TAG_MAP[active]);
 
   return (
     <section
@@ -91,46 +79,6 @@ export default function Gallery() {
           </h2>
         </motion.div>
 
-        {/* Filter tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 10,
-            marginBottom: 'clamp(32px, 5vw, 48px)',
-          }}
-        >
-          {TAGS.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => setActive(tag)}
-              style={{
-                fontFamily: '"Manrope", system-ui, sans-serif',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                letterSpacing: '0.03em',
-                padding: '8px 20px',
-                borderRadius: 999,
-                border: active === tag
-                  ? '1px solid rgba(42,122,82,0.7)'
-                  : '1px solid var(--border-strong)',
-                background: active === tag
-                  ? 'rgba(16, 36, 28, 0.8)'
-                  : 'transparent',
-                color: active === tag ? '#e8f6ee' : 'var(--text-soft)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: active === tag ? '0 0 0 3px rgba(47,143,94,0.15)' : 'none',
-              }}
-            >
-              {tag}
-            </button>
-          ))}
-        </motion.div>
-
         {/* Grid */}
         <motion.div
           layout
@@ -141,7 +89,7 @@ export default function Gallery() {
           }}
         >
           <AnimatePresence mode="popLayout">
-            {filtered.map((ev, i) => (
+            {EVENTS.map((ev, i) => (
               <motion.div
                 key={ev.id}
                 layout
@@ -221,7 +169,6 @@ export default function Gallery() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Note */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
@@ -236,6 +183,20 @@ export default function Gallery() {
           }}
         >
           Cada evento es único — estos son algunos de los momentos que hemos celebrado juntos.
+        </motion.p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 1, delay: 0.9 }}
+          style={{
+            marginTop: '12px',
+            textAlign: 'center',
+            fontFamily: '"Playfair Display", serif',
+            fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+            color: '#f8f6f0',
+          }}
+        >
+          El espacio ideal existe. Bienvenido a <MarlettPriveLabel />.
         </motion.p>
       </div>
     </section>

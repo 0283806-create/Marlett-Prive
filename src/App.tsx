@@ -6,6 +6,7 @@ import RequestForm from './components/form/RequestForm';
 import WhyMarlett from './components/WhyMarlett';
 import Gallery from './components/Gallery';
 import EventTypes from './components/EventTypes';
+import MarlettPriveLabel from './components/MarlettPriveLabel';
 import { SITE_URL, withSiteUrl } from './lib/config';
 
 function App() {
@@ -91,8 +92,7 @@ function App() {
         <div className="navbar-inner">
             <img src="/marlett_clean.png" alt="Marlett" className="navbar-logo" style={{height:36,width:"auto",display:"block"}} />
           <div className="navbar-text navbar-title site-brand">
-            {/* Corregido: "Privé" con acento */}
-            <h1>Marlett Privé</h1>
+            <h1><MarlettPriveLabel /></h1>
             <p>Agenda tu evento — Restaurante &amp; Salón de eventos</p>
           </div>
           <div className="navbar-actions top-actions">
