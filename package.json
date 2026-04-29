@@ -10,6 +10,7 @@
     "deploy": "vercel build --prod --yes && vercel deploy --prebuilt --prod --yes"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@supabase/supabase-js": "^2.38.4",
     "@types/react": "^19.2.4",
     "@types/react-dom": "^19.2.3",
@@ -17,10 +18,12 @@
     "framer-motion": "^12.36.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
+    "react-router-dom": "^7.14.0",
     "typescript": "^5.9.3",
     "vite": "^5.0.0"
   },
   "devDependencies": {
+    "@types/react-router-dom": "^5.3.3",
     "dotenv-cli": "^11.0.0",
     "vercel": "^48.9.2"
   },

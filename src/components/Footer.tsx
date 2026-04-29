@@ -1,4 +1,5 @@
-import MarlettPriveLabel from './MarlettPriveLabel';
+import { Link } from 'react-router-dom';
+import BrandLogo from './BrandLogo';
 
 export default function Footer() {
   return (
@@ -6,9 +7,10 @@ export default function Footer() {
       <div className="footer-inner">
         <div className="footer-top">
           <div className="footer-brand">
-            <img src="/assets/Marlett_high_contrast.jpg" alt="Marlett logo" className="footer-logo" />
+            <BrandLogo height={64} variant="footer" />
+            <span className="footer-brand__suffix">PRIVÉ</span>
             <p className="footer-copy">
-              <MarlettPriveLabel /> es un espacio para celebraciones y experiencias privadas, con atención
+              Un espacio para celebraciones y experiencias privadas, con atención
               personalizada y detalles pensados para cada evento.
             </p>
           </div>
@@ -23,7 +25,7 @@ export default function Footer() {
         <div className="footer-divider" />
 
         <div className="footer-bottom">
-          <p className="footer-legal">© 2026 Marlett | <MarlettPriveLabel /></p>
+          <p className="footer-legal">© 2026 Marlett Privé. Todos los derechos reservados.</p>
 
           <div className="footer-socials" aria-label="Redes sociales">
             <a
@@ -60,6 +62,16 @@ export default function Footer() {
             </a>
           </div>
         </div>
+
+        <Link to="/login" className="footer-admin-link" aria-label="Administración">
+          <svg className="footer-admin-lock" viewBox="0 0 24 24" aria-hidden="true" width={11} height={11}>
+            <path
+              fill="currentColor"
+              d="M12 17a2 2 0 0 0 2-2v-2H10v2a2 2 0 0 0 2 2Zm6-7V9a6 6 0 1 0-12 0v1H4v10h16V10h-2ZM8 9a4 4 0 1 1 8 0v1H8V9Z"
+            />
+          </svg>
+          <span className="footer-admin-text">Administración</span>
+        </Link>
       </div>
     </footer>
   );

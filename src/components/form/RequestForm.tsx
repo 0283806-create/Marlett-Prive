@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import MarlettPriveLabel from '../MarlettPriveLabel';
+import TicketSummary from './TicketSummary';
 import { logError, maskPhone } from '../../lib/logger';
 import { SUPABASE_CONFIG_ERROR, supabase } from '../../lib/supabaseClient';
 import { formatPhoneInput, normalizeMxToE164, validateMainStep } from '../../lib/validation';
@@ -32,7 +34,20 @@ type RequestInsertPayload = {
   needs_av: string | null;
   media_interest: string | null;
   notes: string | null;
-  status: 'pending';
+  es_urgente: boolean;
+};
+
+const URGENCY_WINDOW_DAYS = 30;
+
+const isWithin30Days = (dateString: string): boolean => {
+  if (!dateString) return false;
+  const eventDate = new Date(`${dateString}T12:00:00`);
+  if (Number.isNaN(eventDate.getTime())) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffMs = eventDate.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  return diffDays >= 0 && diffDays < URGENCY_WINDOW_DAYS;
 };
 
 const INITIAL_FORM: FormState = {
@@ -69,9 +84,12 @@ export default function RequestForm() {
   const [submitError, setSubmitError] = useState('');
   const [submitErrorDev, setSubmitErrorDev] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [submittedAsUrgent, setSubmittedAsUrgent] = useState(false);
   const [showError, setShowError] = useState(false);
   const [honeypot, setHoneypot] = useState('');
   const lastSubmitAtRef = useRef(0);
+
+  const showUrgencyNotice = !form.dateFlex && Boolean(form.date) && isWithin30Days(form.date);
 
   const setField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -183,7 +201,7 @@ export default function RequestForm() {
         needs_av: form.visualsAudio || null,
         media_interest: form.photoVideo || null,
         notes: notesWithFlex || null,
-        status: 'pending'
+        es_urgente: showUrgencyNotice
       };
       payloadForLog = {
         ...payload,
@@ -209,6 +227,7 @@ export default function RequestForm() {
         });
       }
       if (error) throw error;
+      setSubmittedAsUrgent(showUrgencyNotice);
       setForm(INITIAL_FORM);
       setStep(1);
       setErrors({});
@@ -308,6 +327,70 @@ export default function RequestForm() {
                 {errors.date && <small className="field-error">{errors.date}</small>}
               </label>
 
+              <AnimatePresence>
+                {showUrgencyNotice && (
+                  <motion.div
+                    key="urgency-notice"
+                    role="status"
+                    aria-live="polite"
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.35 }}
+                    style={{
+                      marginTop: '-4px',
+                      padding: '14px 18px',
+                      background:
+                        'linear-gradient(180deg, rgba(201,168,76,0.12) 0%, rgba(201,168,76,0.06) 100%)',
+                      border: '1px solid rgba(201,168,76,0.45)',
+                      borderRadius: '12px',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '12px',
+                    }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        fontSize: '18px',
+                        lineHeight: 1,
+                        color: '#c9a84c',
+                        flexShrink: 0,
+                        marginTop: '2px',
+                      }}
+                    >
+                      ◆
+                    </span>
+                    <div>
+                      <p
+                        style={{
+                          fontFamily: "'Playfair Display', Georgia, serif",
+                          fontStyle: 'italic',
+                          fontSize: '15px',
+                          fontWeight: 500,
+                          color: '#c9a84c',
+                          margin: 0,
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        Tu evento es en menos de 30 días.
+                      </p>
+                      <p
+                        style={{
+                          fontFamily: "'Manrope', sans-serif",
+                          fontSize: '13px',
+                          color: 'rgba(241,245,240,0.75)',
+                          margin: '4px 0 0 0',
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        Por la cercanía de la fecha, nuestro equipo revisará disponibilidad de inmediato e intentará ajustarse a tu evento. Te contactaremos en las próximas horas.
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <label className="form-field">
                 <span>Invitados</span>
                 <div className="guest-chips">
@@ -331,11 +414,19 @@ export default function RequestForm() {
               <div className="actions">
                 <button
                   type="button"
-                  className="btn btn-ghost"
+                  className="cta-secondary"
                   onClick={goToStep2}
                   disabled={isSubmitting}
                 >
                   Agregar detalles (opcional)
+                </button>
+                <button
+                  type="submit"
+                  className="cta-primary"
+                  disabled={isSubmitting}
+                  style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                >
+                  {isSubmitting ? 'Enviando…' : 'Enviar solicitud'}
                 </button>
               </div>
             </div>
@@ -374,19 +465,19 @@ export default function RequestForm() {
               <div className="actions">
                 <button
                   type="button"
-                  className="btn btn-ghost"
+                  className="cta-secondary"
                   onClick={() => setStep(1)}
                   disabled={isSubmitting}
                 >
-                  Datos principales
+                  ← Datos principales
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary"
+                  className="cta-primary"
                   disabled={isSubmitting}
                   style={{ opacity: isSubmitting ? 0.7 : 1 }}
                 >
-                  {isSubmitting ? 'Enviando...' : 'Enviar solicitud'}
+                  {isSubmitting ? 'Enviando…' : 'Enviar solicitud'}
                 </button>
               </div>
               {import.meta.env.DEV && submitErrorDev && <small className="field-error">{submitErrorDev}</small>}
@@ -395,16 +486,26 @@ export default function RequestForm() {
         </form>
       </div>
 
-      <aside className="request-right" style={{ background: 'transparent', border: 'none', boxShadow: 'none', padding: 0 }}>
-        <div style={{ position: 'relative', width: '100%', height: '90vh' }}>
-          <img src="/ticketreservacion.svg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
-          <svg viewBox="0 0 810 1012.5" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-            <text x="420" y="463" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.dateFlex ? 'Por definir' : (form.date || 'Por definir')}</text>
-            <text x="420" y="532" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.guests || 'Por definir'}</text>
-            <text x="390" y="600" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.eventType || 'Por definir'}</text>
-            <text x="420" y="678" fontFamily="'Playfair Display', Georgia, serif" fontSize="26" fontWeight="400" fontStyle="italic" fill="#1a1a1a" opacity="0.85" textAnchor="middle" dominantBaseline="auto" letterSpacing="1.5">{form.phone || 'Por definir'}</text>
-          </svg>
-        </div>
+      <aside
+        className="request-right"
+        style={{
+          background: 'transparent',
+          border: 'none',
+          boxShadow: 'none',
+          padding: 0,
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'center',
+        }}
+      >
+        <TicketSummary
+          fullName={form.fullName}
+          phone={form.phone}
+          date={form.date}
+          dateFlex={form.dateFlex}
+          guests={form.guests}
+          eventType={form.eventType}
+        />
       </aside>
 
       {/* Modal éxito */}
@@ -454,6 +555,9 @@ export default function RequestForm() {
                   textAlign: 'center',
                 }}
               >
+                <div style={{ fontSize: '1.5rem', marginBottom: 16 }}>
+                  <MarlettPriveLabel />
+                </div>
                 <div
                   style={{
                     width: 72,
@@ -493,24 +597,30 @@ export default function RequestForm() {
                 >
                   Nos pondremos en contacto contigo pronto para confirmar disponibilidad y compartirte una propuesta.
                 </p>
+                {submittedAsUrgent && (
+                  <p
+                    style={{
+                      fontFamily: "'Manrope', sans-serif",
+                      fontSize: '13px',
+                      color: '#c9a84c',
+                      marginTop: 14,
+                      lineHeight: 1.5,
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    Como tu evento es próximo, daremos prioridad a tu solicitud y te contactaremos en las próximas horas.
+                  </p>
+                )}
                 <button
                   type="button"
+                  className="cta-primary"
                   onClick={() => {
                     setShowSuccessModal(false);
                     setForm(INITIAL_FORM);
                     setStep(1);
                     setErrors({});
                   }}
-                  style={{
-                    background: 'linear-gradient(180deg, #3ca671 0%, #2f8f5e 100%)',
-                    color: '#fff',
-                    borderRadius: 9999,
-                    padding: '12px 36px',
-                    fontWeight: 600,
-                    marginTop: 32,
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
+                  style={{ marginTop: 32 }}
                 >
                   Cerrar
                 </button>
