@@ -219,6 +219,7 @@ function buildEmailHtml(record: ReservationRecord, daysUntil: number | null, fec
 async function logNotification(
   supabase: ReturnType<typeof createClient>,
   reservationId: string,
+  recipientEmail: string,
   subject: string,
   isUrgent: boolean,
   status: 'sent' | 'failed',
@@ -228,7 +229,7 @@ async function logNotification(
   try {
     const { error } = await supabase.from('notification_log').insert({
       reservation_id: reservationId,
-      recipient_email: NOTIFICATION_TO_EMAIL,
+      recipient_email: recipientEmail,
       subject,
       is_urgent: isUrgent,
       status,
@@ -288,6 +289,18 @@ serve(async (req: Request) => {
   const html = buildEmailHtml(record, daysUntil, fechaFlexible);
   const isUrgent = Boolean(record.es_urgente);
 
+  const recipients = NOTIFICATION_TO_EMAIL
+    .split(',')
+    .map((email) => email.trim())
+    .filter((email) => email.length > 0);
+
+  if (recipients.length === 0) {
+    return new Response(
+      JSON.stringify({ error: 'NOTIFICATION_TO_EMAIL has no valid recipients' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  }
+
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -301,7 +314,7 @@ serve(async (req: Request) => {
       },
       body: JSON.stringify({
         from: `Marlett Privé <${NOTIFICATION_FROM_EMAIL}>`,
-        to: [NOTIFICATION_TO_EMAIL],
+        to: recipients,
         subject,
         html,
       }),
@@ -311,7 +324,16 @@ serve(async (req: Request) => {
 
     if (!resendResponse.ok) {
       const errorMsg = resendData?.message || `Resend API error ${resendResponse.status}`;
-      await logNotification(supabase, record.id, subject, isUrgent, 'failed', null, errorMsg);
+      await logNotification(
+        supabase,
+        record.id,
+        recipients.join(', '),
+        subject,
+        isUrgent,
+        'failed',
+        null,
+        errorMsg,
+      );
       console.error('Resend error:', resendData);
       return new Response(JSON.stringify({ error: errorMsg, details: resendData }), {
         status: 500,
@@ -322,6 +344,7 @@ serve(async (req: Request) => {
     await logNotification(
       supabase,
       record.id,
+      recipients.join(', '),
       subject,
       isUrgent,
       'sent',
@@ -335,7 +358,16 @@ serve(async (req: Request) => {
     );
   } catch (e) {
     const errorMsg = e instanceof Error ? e.message : 'Unknown error';
-    await logNotification(supabase, record.id, subject, isUrgent, 'failed', null, errorMsg);
+    await logNotification(
+      supabase,
+      record.id,
+      recipients.join(', '),
+      subject,
+      isUrgent,
+      'failed',
+      null,
+      errorMsg,
+    );
     console.error('Error sending email:', e);
     return new Response(JSON.stringify({ error: errorMsg }), {
       status: 500,
